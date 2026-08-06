@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Jeevitham is a premium maternal and child healthcare operating system for families, doctors, and hospitals."
+    />
+    <title>Jeevitham</title>
+    <script>
+      const savedTheme = localStorage.getItem("jeevitham-theme");
+      if (savedTheme === "dark" || !savedTheme) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
