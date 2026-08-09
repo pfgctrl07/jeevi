@@ -26,6 +26,7 @@ import {
   recentActivities,
   summaryItems,
   t,
+  tx,
   type SectionKey,
 } from "@/lib/data";
 import { getModalContent } from "@/components/dashboard/modal-content";
@@ -108,16 +109,10 @@ export function DashboardPage() {
                   {t(activeHeading.title, selectedLanguage)}
                 </div>
                 <h2 className="text-balance text-3xl font-semibold leading-tight text-foreground sm:text-4xl">
-                  {selectedRole === "parent"
-                    ? "Family healthcare made simple for today."
-                    : selectedRole === "doctor"
-                      ? "Clear care workflows for every child visit."
-                      : "A cleaner maternal and child healthcare workspace."}
+                  {tx(selectedRole === "parent" ? "Family healthcare made simple for today." : selectedRole === "doctor" ? "Clear care workflows for every child visit." : "A cleaner maternal and child healthcare workspace.", selectedLanguage)}
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                  {selectedRole === "parent"
-                    ? "See the next vaccine, next appointment, emergency help, and health learning within a few seconds."
-                    : "Important tasks stay visible first, with simple wording and less dashboard clutter."}
+                  {tx(selectedRole === "parent" ? "See the next vaccine, next appointment, emergency help, and health learning within a few seconds." : "Important tasks stay visible first, with simple wording and less dashboard clutter.", selectedLanguage)}
                 </p>
               </div>
 
@@ -139,7 +134,7 @@ export function DashboardPage() {
                   className="sm:col-span-2"
                   onClick={() => setAssistantOpen(true)}
                 >
-                  Ask Jeevi AI
+                  {tx("Ask Jeevi AI", selectedLanguage)}
                 </Button>
               </div>
             </div>
@@ -160,16 +155,10 @@ export function DashboardPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h3 className="text-xl font-semibold text-foreground">
-                  {selectedRole === "parent"
-                    ? "What should I do next?"
-                    : selectedRole === "doctor"
-                      ? "Today’s care priorities"
-                      : "Hospital care priorities"}
+                    {tx(selectedRole === "parent" ? "What should I do next?" : selectedRole === "doctor" ? "Today’s care priorities" : "Hospital care priorities", selectedLanguage)}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {selectedRole === "parent"
-                    ? "The most important actions stay large, simple, and easy to tap."
-                    : "Priority care actions are shown first with less visual noise."}
+                    {tx(selectedRole === "parent" ? "The most important actions stay large, simple, and easy to tap." : "Priority care actions are shown first with less visual noise.", selectedLanguage)}
                 </p>
               </div>
             </div>
@@ -201,20 +190,20 @@ export function DashboardPage() {
                       <HeartPulse className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-foreground">Emergency Access</h3>
+                      <h3 className="text-xl font-semibold text-foreground">{tx("Emergency Access", selectedLanguage)}</h3>
                       <p className="text-sm text-muted-foreground">
-                        The fastest way to get help should always stay visible.
+                        {tx("The fastest way to get help should always stay visible.", selectedLanguage)}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid gap-3">
                     <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
-                      <p className="text-sm text-muted-foreground">Ambulance</p>
+                      <p className="text-sm text-muted-foreground">{tx("Ambulance", selectedLanguage)}</p>
                       <p className="mt-1 text-lg font-semibold text-foreground">108</p>
                     </div>
                     <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
-                      <p className="text-sm text-muted-foreground">Women Helpline</p>
+                      <p className="text-sm text-muted-foreground">{tx("Women Helpline", selectedLanguage)}</p>
                       <p className="mt-1 text-lg font-semibold text-foreground">181</p>
                     </div>
                     <Button
@@ -225,7 +214,7 @@ export function DashboardPage() {
                         setOpenModal("emergency");
                       }}
                     >
-                      Open Emergency Contacts
+                      {tx("Open Emergency Contacts", selectedLanguage)}
                     </Button>
                   </div>
                 </CardContent>
@@ -238,9 +227,9 @@ export function DashboardPage() {
                       <Sparkles className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-foreground">Jeevi AI</h3>
+                      <h3 className="text-xl font-semibold text-foreground">{tx("Jeevi AI", selectedLanguage)}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Quick help for vaccines, food, and simple next steps.
+                        {tx("Quick help for vaccines, food, and simple next steps.", selectedLanguage)}
                       </p>
                     </div>
                   </div>
@@ -253,7 +242,7 @@ export function DashboardPage() {
                         onClick={() => setAssistantOpen(true)}
                         className="w-full rounded-2xl border border-border/70 bg-background/72 px-4 py-3 text-left text-sm text-foreground transition hover:bg-muted"
                       >
-                        {prompt}
+                {tx(prompt, selectedLanguage)}
                       </button>
                     ))}
                   </div>
@@ -268,9 +257,9 @@ export function DashboardPage() {
             <Card className="border-border/70 bg-card/88">
               <CardContent className="space-y-4 p-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground">Popular Services</h3>
+                    <h3 className="text-xl font-semibold text-foreground">{tx("Popular Services", selectedLanguage)}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    The most useful family healthcare paths stay visible even on a first visit.
+                    {tx("The most useful family healthcare paths stay visible even on a first visit.", selectedLanguage)}
                   </p>
                 </div>
 
@@ -282,9 +271,9 @@ export function DashboardPage() {
                   >
                     <CalendarDays className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Appointments</p>
+                      <p className="text-sm text-muted-foreground">{tx("Appointments", selectedLanguage)}</p>
                       <p className="mt-1 font-semibold text-foreground">
-                        Manage upcoming doctor visits and follow-ups.
+                        {tx("Manage upcoming doctor visits and follow-ups.", selectedLanguage)}
                       </p>
                     </div>
                   </button>
@@ -295,9 +284,9 @@ export function DashboardPage() {
                   >
                     <Stethoscope className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Doctor Information</p>
+                      <p className="text-sm text-muted-foreground">{tx("Doctor Information", selectedLanguage)}</p>
                       <p className="mt-1 font-semibold text-foreground">
-                        Find care centers, contacts, and support nearby.
+                        {tx("Find care centers, contacts, and support nearby.", selectedLanguage)}
                       </p>
                     </div>
                   </button>
@@ -308,9 +297,9 @@ export function DashboardPage() {
                   >
                     <BookOpenText className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Health Learning</p>
+                      <p className="text-sm text-muted-foreground">{tx("Health Learning", selectedLanguage)}</p>
                       <p className="mt-1 font-semibold text-foreground">
-                        Open pregnancy, feeding, and child care prototype lessons.
+                        {tx("Open pregnancy, feeding, and child care prototype lessons.", selectedLanguage)}
                       </p>
                     </div>
                   </button>
@@ -321,9 +310,9 @@ export function DashboardPage() {
                   >
                     <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Vaccination</p>
+                      <p className="text-sm text-muted-foreground">{tx("Vaccination", selectedLanguage)}</p>
                       <p className="mt-1 font-semibold text-foreground">
-                        Review vaccine schedule and due dates clearly.
+                        {tx("Review vaccine schedule and due dates clearly.", selectedLanguage)}
                       </p>
                     </div>
                   </button>
@@ -334,9 +323,9 @@ export function DashboardPage() {
                   >
                     <Bot className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Patient Services</p>
+                      <p className="text-sm text-muted-foreground">{tx("Patient Services", selectedLanguage)}</p>
                       <p className="mt-1 font-semibold text-foreground">
-                        Keep records, prescriptions, and notes together.
+                        {tx("Keep records, prescriptions, and notes together.", selectedLanguage)}
                       </p>
                     </div>
                   </button>
@@ -349,9 +338,9 @@ export function DashboardPage() {
             <Card className="border-border/70 bg-card/88">
               <CardContent className="space-y-4 p-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground">Learning This Week</h3>
+                  <h3 className="text-xl font-semibold text-foreground">{tx("Learning This Week", selectedLanguage)}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Prototype lesson shelves make the learning area look real without streaming video.
+                    {tx("Prototype lesson shelves make the learning area look real without streaming video.", selectedLanguage)}
                   </p>
                 </div>
 
@@ -360,7 +349,7 @@ export function DashboardPage() {
                   className="w-full justify-between"
                   onClick={() => setActiveSection("learning")}
                 >
-                  Open Learning Hub
+                  {tx("Open Learning Hub", selectedLanguage)}
                   <BookOpenText className="h-4 w-4" />
                 </Button>
               </CardContent>
@@ -369,9 +358,9 @@ export function DashboardPage() {
             <Card className="border-border/70 bg-card/88">
               <CardContent className="space-y-4 p-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground">Need Help Now?</h3>
+                  <h3 className="text-xl font-semibold text-foreground">{tx("Need Help Now?", selectedLanguage)}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Use emergency contacts first, then continue with care, learning, or appointments.
+                    {tx("Use emergency contacts first, then continue with care, learning, or appointments.", selectedLanguage)}
                   </p>
                 </div>
 
@@ -383,7 +372,7 @@ export function DashboardPage() {
                     setOpenModal("emergency");
                   }}
                 >
-                  Open Emergency
+                  {tx("Open Emergency", selectedLanguage)}
                 </Button>
               </CardContent>
             </Card>
@@ -412,8 +401,8 @@ export function DashboardPage() {
             window.localStorage.setItem(ONBOARDING_KEY, "true");
           }
         }}
-        title="First Login Setup"
-        description="A simple onboarding flow prepares the family profile without overwhelming the caregiver."
+        title={tx("First Login Setup", selectedLanguage)}
+        description={tx("A simple onboarding flow prepares the family profile without overwhelming the caregiver.", selectedLanguage)}
       >
         <div className="space-y-3">
           {onboardingSteps.map((step, index) => (
@@ -425,8 +414,8 @@ export function DashboardPage() {
                 {index + 1}
               </div>
               <div>
-                <p className="font-semibold text-foreground">{step.title}</p>
-                <p className="text-sm leading-6 text-muted-foreground">{step.detail}</p>
+                <p className="font-semibold text-foreground">{tx(step.title, selectedLanguage)}</p>
+                <p className="text-sm leading-6 text-muted-foreground">{tx(step.detail, selectedLanguage)}</p>
               </div>
             </div>
           ))}
@@ -438,7 +427,7 @@ export function DashboardPage() {
               setShowOnboarding(false);
             }}
           >
-            Continue to Jeevitham
+            {tx("Continue to Jeevitham", selectedLanguage)}
           </Button>
         </div>
       </Modal>
@@ -446,13 +435,12 @@ export function DashboardPage() {
       <Modal
         open={isAssistantOpen}
         onOpenChange={setAssistantOpen}
-        title="Jeevi AI Assistant"
-        description="Friendly multilingual guidance for nutrition, parenting, vaccination, child health education, and next steps."
+        title={tx("Jeevi AI Assistant", selectedLanguage)}
+        description={tx("Friendly multilingual guidance for nutrition, parenting, vaccination, child health education, and next steps.", selectedLanguage)}
       >
         <div className="space-y-4">
           <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm leading-7 text-foreground">
-            Hello, I am Jeevi. I can explain vaccine timing, child feeding, common
-            symptoms, growth milestones, and safe next steps in simple language.
+            {tx("Hello, I am Jeevi. I can explain vaccine timing, child feeding, common symptoms, growth milestones, and safe next steps in simple language.", selectedLanguage)}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -460,10 +448,10 @@ export function DashboardPage() {
               <CardContent className="space-y-2 p-4">
                 <div className="flex items-center gap-2 text-foreground">
                   <Bot className="h-5 w-5 text-primary" />
-                  <p className="font-semibold">Sample question</p>
+                  <p className="font-semibold">{tx("Sample question", selectedLanguage)}</p>
                 </div>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  “My child missed one vaccine. What should I do next?”
+                  {tx("My child missed one vaccine. What should I do next?", selectedLanguage)}
                 </p>
               </CardContent>
             </Card>
@@ -471,11 +459,10 @@ export function DashboardPage() {
               <CardContent className="space-y-2 p-4">
                 <div className="flex items-center gap-2 text-foreground">
                   <HeartPulse className="h-5 w-5 text-emerald-400" />
-                  <p className="font-semibold">Sample answer</p>
+                  <p className="font-semibold">{tx("Sample answer", selectedLanguage)}</p>
                 </div>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  “Do not worry. Open Vaccination Timeline, check the missed dose,
-                  and contact the nearest care center shown in Hospitals.”
+                  {tx("Do not worry. Open Vaccination Timeline, check the missed dose, and contact the nearest care center shown in Hospitals.", selectedLanguage)}
                 </p>
               </CardContent>
             </Card>
@@ -484,11 +471,10 @@ export function DashboardPage() {
           <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
             <div className="flex items-center gap-2 text-foreground">
               <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-              <p className="font-semibold">Multilingual-ready architecture</p>
+              <p className="font-semibold">{tx("Multilingual-ready architecture", selectedLanguage)}</p>
             </div>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Navigation, labels, buttons, and help content are now structured to scale
-              across English, Tamil, and Hindi.
+              {tx("Navigation, labels, buttons, and help content are now structured to scale across English, Tamil, and Hindi.", selectedLanguage)}
             </p>
           </div>
         </div>

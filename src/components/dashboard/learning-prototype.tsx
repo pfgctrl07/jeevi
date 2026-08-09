@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Clock3, Play, Sparkles } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
-import { learningShelves, t, type AppLanguage, type LearningLesson } from "@/lib/data";
+import { learningShelves, t, tx, type AppLanguage, type LearningLesson } from "@/lib/data";
 
 export function LearningPrototype({ language }: { language: AppLanguage }) {
   const [activeLesson, setActiveLesson] = useState<LearningLesson | null>(null);
@@ -18,7 +18,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
                   {t(shelf.title, language)}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Dummy educational content for the product prototype.
+                  {tx("Dummy educational content for the product prototype.", language)}
                 </p>
               </div>
             </div>
@@ -39,7 +39,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
                   >
                     <div className="flex items-start justify-between">
                       <span className="rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700">
-                        Prototype
+                        {tx("Prototype", language)}
                       </span>
                       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950/80 text-white shadow-lg">
                         <Play className="ml-0.5 h-4 w-4 fill-current" />
@@ -89,7 +89,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
               className={`relative h-56 rounded-[1.6rem] bg-gradient-to-br ${activeLesson.gradient} p-6`}
             >
               <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700">
-                Prototype
+                {tx("Prototype", language)}
               </span>
               <div className="absolute bottom-6 left-6 right-6">
                 <p className="text-sm font-medium text-slate-700">
@@ -106,8 +106,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
             </p>
 
             <div className="rounded-[1.4rem] border border-primary/20 bg-primary/10 px-4 py-4 text-sm leading-7 text-foreground">
-              This educational content is currently a prototype. Video content will
-              be available in future versions.
+              {tx("This educational content is currently a prototype. Video content will be available in future versions.", language)}
             </div>
           </div>
         ) : null}

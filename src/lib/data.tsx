@@ -141,21 +141,25 @@ export type LearningShelf = {
 export const languageOptions: Array<{
   code: AppLanguage;
   label: LabelSet;
+  nativeLabel: string;
   icon: LucideIcon;
 }> = [
   {
     code: "en",
     label: { en: "English", ta: "ஆங்கிலம்", hi: "अंग्रेज़ी" },
+    nativeLabel: "English",
     icon: Languages,
   },
   {
     code: "ta",
     label: { en: "Tamil", ta: "தமிழ்", hi: "तमिल" },
+    nativeLabel: "தமிழ்",
     icon: Languages,
   },
   {
     code: "hi",
     label: { en: "Hindi", ta: "இந்தி", hi: "हिंदी" },
+    nativeLabel: "हिंदी",
     icon: Languages,
   },
 ];
@@ -887,4 +891,90 @@ export const modalContentMap: Record<Exclude<SectionKey, "dashboard">, ModalCont
 
 export function t(label: LabelSet, language: AppLanguage) {
   return label[language];
+}
+
+export const uiText: Record<string, LabelSet> = {
+  "My Child Today": { en: "My Child Today", ta: "இன்று என் குழந்தை", hi: "आज मेरा बच्चा" },
+  "Doctor Care Workspace": { en: "Doctor Care Workspace", ta: "மருத்துவர் பராமரிப்பு பகுதி", hi: "डॉक्टर देखभाल कार्यक्षेत्र" },
+  "Hospital Care Workspace": { en: "Hospital Care Workspace", ta: "மருத்துவமனை பராமரிப்பு பகுதி", hi: "अस्पताल देखभाल कार्यक्षेत्र" },
+  "Welcome back, Priya 👋": { en: "Welcome back, Priya 👋", ta: "மீண்டும் வரவேற்கிறோம், பிரியா 👋", hi: "वापसी पर स्वागत है, प्रिया 👋" },
+  "See the next vaccine, next appointment, health status, and urgent care in one view.": { en: "See the next vaccine, next appointment, health status, and urgent care in one view.", ta: "அடுத்த தடுப்பூசி, சந்திப்பு, உடல்நிலை மற்றும் அவசர சிகிச்சையை ஒரே பார்வையில் காண்க.", hi: "अगला टीका, अपॉइंटमेंट, स्वास्थ्य स्थिति और आपात सहायता एक ही जगह देखें।" },
+  "Follow vaccinations, appointments, and prescriptions without admin-style clutter.": { en: "Follow vaccinations, appointments, and prescriptions without admin-style clutter.", ta: "தடுப்பூசிகள், சந்திப்புகள் மற்றும் மருந்துகளை எளிமையாகப் பின்தொடருங்கள்.", hi: "टीकाकरण, अपॉइंटमेंट और दवाओं को आसानी से देखें।" },
+  "Manage campaigns, care teams, and summaries with simple healthcare-first screens.": { en: "Manage campaigns, care teams, and summaries with simple healthcare-first screens.", ta: "முகாம்கள், பராமரிப்பு குழுக்கள் மற்றும் சுருக்கங்களை எளிய திரைகளில் நிர்வகிக்கவும்.", hi: "अभियान, देखभाल टीम और सारांश सरल स्क्रीन से प्रबंधित करें।" },
+  "Family healthcare made simple for today.": { en: "Family healthcare made simple for today.", ta: "இன்றைய குடும்ப சுகாதாரம் எளிமையாக.", hi: "आज की पारिवारिक स्वास्थ्य देखभाल सरल।" },
+  "Clear care workflows for every child visit.": { en: "Clear care workflows for every child visit.", ta: "ஒவ்வொரு குழந்தை சந்திப்பிற்கும் தெளிவான பராமரிப்பு நடைமுறைகள்.", hi: "हर बच्चे की विज़िट के लिए स्पष्ट देखभाल प्रक्रिया।" },
+  "A cleaner maternal and child healthcare workspace.": { en: "A cleaner maternal and child healthcare workspace.", ta: "தாய் மற்றும் குழந்தை சுகாதாரத்திற்கான தெளிவான பகுதி.", hi: "मातृ और शिशु स्वास्थ्य के लिए सरल कार्यक्षेत्र।" },
+  "See the next vaccine, next appointment, emergency help, and health learning within a few seconds.": { en: "See the next vaccine, next appointment, emergency help, and health learning within a few seconds.", ta: "அடுத்த தடுப்பூசி, சந்திப்பு, அவசர உதவி மற்றும் சுகாதாரக் கற்றலை சில நொடிகளில் காண்க.", hi: "अगला टीका, अपॉइंटमेंट, आपात सहायता और स्वास्थ्य सीख कुछ सेकंड में देखें।" },
+  "Important tasks stay visible first, with simple wording and less dashboard clutter.": { en: "Important tasks stay visible first, with simple wording and less dashboard clutter.", ta: "முக்கிய பணிகள் எளிய சொற்களுடன் முதலில் தெரியும்.", hi: "महत्वपूर्ण कार्य सरल शब्दों में सबसे पहले दिखते हैं।" },
+  "Ask Jeevi AI": { en: "Ask Jeevi AI", ta: "ஜீவி AI-யிடம் கேளுங்கள்", hi: "जीवी AI से पूछें" },
+  "What should I do next?": { en: "What should I do next?", ta: "அடுத்து நான் என்ன செய்ய வேண்டும்?", hi: "मुझे आगे क्या करना चाहिए?" },
+  "Today’s care priorities": { en: "Today’s care priorities", ta: "இன்றைய பராமரிப்பு முன்னுரிமைகள்", hi: "आज की देखभाल प्राथमिकताएं" },
+  "Hospital care priorities": { en: "Hospital care priorities", ta: "மருத்துவமனை பராமரிப்பு முன்னுரிமைகள்", hi: "अस्पताल देखभाल प्राथमिकताएं" },
+  "The most important actions stay large, simple, and easy to tap.": { en: "The most important actions stay large, simple, and easy to tap.", ta: "முக்கிய செயல்கள் பெரியதாகவும் எளிமையாகவும் இருக்கும்.", hi: "महत्वपूर्ण कार्य बड़े, सरल और आसानी से टैप करने योग्य हैं।" },
+  "Priority care actions are shown first with less visual noise.": { en: "Priority care actions are shown first with less visual noise.", ta: "முன்னுரிமை பராமரிப்பு செயல்கள் முதலில் காட்டப்படும்.", hi: "प्राथमिक देखभाल कार्य पहले दिखाए जाते हैं।" },
+  "Emergency Access": { en: "Emergency Access", ta: "அவசர அணுகல்", hi: "आपात सहायता" },
+  "The fastest way to get help should always stay visible.": { en: "The fastest way to get help should always stay visible.", ta: "உதவி பெறும் விரைவான வழி எப்போதும் தெரியும்.", hi: "सहायता पाने का सबसे तेज़ तरीका हमेशा दिखाई देगा।" },
+  Ambulance: { en: "Ambulance", ta: "ஆம்புலன்ஸ்", hi: "एम्बुलेंस" },
+  "Women Helpline": { en: "Women Helpline", ta: "பெண்கள் உதவி எண்", hi: "महिला हेल्पलाइन" },
+  "Open Emergency Contacts": { en: "Open Emergency Contacts", ta: "அவசர தொடர்புகளைத் திறக்கவும்", hi: "आपात संपर्क खोलें" },
+  "Quick help for vaccines, food, and simple next steps.": { en: "Quick help for vaccines, food, and simple next steps.", ta: "தடுப்பூசி, உணவு மற்றும் அடுத்த படிகளுக்கான விரைவு உதவி.", hi: "टीके, भोजन और अगले कदमों के लिए त्वरित सहायता।" },
+  "Popular Services": { en: "Popular Services", ta: "பிரபலமான சேவைகள்", hi: "लोकप्रिय सेवाएं" },
+  "Learning This Week": { en: "Learning This Week", ta: "இந்த வாரக் கற்றல்", hi: "इस सप्ताह की सीख" },
+  "Open Learning Hub": { en: "Open Learning Hub", ta: "கற்றல் மையத்தைத் திறக்கவும்", hi: "लर्निंग हब खोलें" },
+  "Need Help Now?": { en: "Need Help Now?", ta: "இப்போது உதவி வேண்டுமா?", hi: "अभी सहायता चाहिए?" },
+  "Open Emergency": { en: "Open Emergency", ta: "அவசர உதவியைத் திறக்கவும்", hi: "आपात सहायता खोलें" },
+  "Care Tip": { en: "Care Tip", ta: "பராமரிப்பு குறிப்பு", hi: "देखभाल सुझाव" },
+  "Keep urgent help, doctor visits, and learning easy to find.": { en: "Keep urgent help, doctor visits, and learning easy to find.", ta: "அவசர உதவி, மருத்துவர் சந்திப்பு மற்றும் கற்றலை எளிதாகக் கண்டுபிடிக்கவும்.", hi: "आपात सहायता, डॉक्टर विज़िट और सीख आसानी से खोजें।" },
+  "Family Admin": { en: "Family Admin", ta: "குடும்ப நிர்வாகி", hi: "परिवार व्यवस्थापक" },
+  "Care Doctor": { en: "Care Doctor", ta: "பராமரிப்பு மருத்துவர்", hi: "देखभाल डॉक्टर" },
+  "Hospital Desk": { en: "Hospital Desk", ta: "மருத்துவமனை மேசை", hi: "अस्पताल डेस्क" },
+  "The most useful family healthcare paths stay visible even on a first visit.": { en: "The most useful family healthcare paths stay visible even on a first visit.", ta: "முதல் வருகையிலும் பயனுள்ள குடும்ப சுகாதார சேவைகள் தெரியும்.", hi: "पहली विज़िट में भी उपयोगी पारिवारिक स्वास्थ्य सेवाएं दिखाई देती हैं।" },
+  Appointments: { en: "Appointments", ta: "சந்திப்புகள்", hi: "अपॉइंटमेंट" },
+  "Manage upcoming doctor visits and follow-ups.": { en: "Manage upcoming doctor visits and follow-ups.", ta: "வரவிருக்கும் மருத்துவர் சந்திப்புகள் மற்றும் பின்பார்வைகளை நிர்வகிக்கவும்.", hi: "आने वाली डॉक्टर विज़िट और फॉलो-अप प्रबंधित करें।" },
+  "Doctor Information": { en: "Doctor Information", ta: "மருத்துவர் தகவல்", hi: "डॉक्टर जानकारी" },
+  "Find care centers, contacts, and support nearby.": { en: "Find care centers, contacts, and support nearby.", ta: "அருகிலுள்ள பராமரிப்பு மையங்கள், தொடர்புகள் மற்றும் உதவியைக் கண்டறியவும்.", hi: "पास के देखभाल केंद्र, संपर्क और सहायता खोजें।" },
+  "Health Learning": { en: "Health Learning", ta: "சுகாதாரக் கற்றல்", hi: "स्वास्थ्य सीख" },
+  "Open pregnancy, feeding, and child care prototype lessons.": { en: "Open pregnancy, feeding, and child care prototype lessons.", ta: "கர்ப்பம், உணவு மற்றும் குழந்தை பராமரிப்பு பாடங்களைத் திறக்கவும்.", hi: "गर्भावस्था, भोजन और बच्चे की देखभाल के पाठ खोलें।" },
+  Vaccination: { en: "Vaccination", ta: "தடுப்பூசி", hi: "टीकाकरण" },
+  "Review vaccine schedule and due dates clearly.": { en: "Review vaccine schedule and due dates clearly.", ta: "தடுப்பூசி அட்டவணை மற்றும் தேதிகளைத் தெளிவாகப் பாருங்கள்.", hi: "टीका समय-सारणी और तारीखें स्पष्ट रूप से देखें।" },
+  "Patient Services": { en: "Patient Services", ta: "நோயாளர் சேவைகள்", hi: "रोगी सेवाएं" },
+  "Keep records, prescriptions, and notes together.": { en: "Keep records, prescriptions, and notes together.", ta: "பதிவுகள், மருந்துகள் மற்றும் குறிப்புகளை ஒரே இடத்தில் வைத்திருங்கள்.", hi: "रिकॉर्ड, दवाएं और नोट्स एक साथ रखें।" },
+  "Prototype lesson shelves make the learning area look real without streaming video.": { en: "Prototype lesson shelves make the learning area look real without streaming video.", ta: "வீடியோ இல்லாமலேயே மாதிரி பாடங்கள் கற்றல் பகுதியை உண்மையாகக் காட்டுகின்றன.", hi: "प्रोटोटाइप पाठ बिना वीडियो के सीखने का क्षेत्र वास्तविक बनाते हैं।" },
+  "Use emergency contacts first, then continue with care, learning, or appointments.": { en: "Use emergency contacts first, then continue with care, learning, or appointments.", ta: "முதலில் அவசர தொடர்புகளைப் பயன்படுத்தி, பின்னர் பராமரிப்பு, கற்றல் அல்லது சந்திப்பைத் தொடருங்கள்.", hi: "पहले आपात संपर्कों का उपयोग करें, फिर देखभाल, सीख या अपॉइंटमेंट जारी रखें।" },
+  "First Login Setup": { en: "First Login Setup", ta: "முதல் உள்நுழைவு அமைப்பு", hi: "पहला लॉगिन सेटअप" },
+  "A simple onboarding flow prepares the family profile without overwhelming the caregiver.": { en: "A simple onboarding flow prepares the family profile without overwhelming the caregiver.", ta: "பராமரிப்பாளரை சிரமப்படுத்தாமல் குடும்ப சுயவிவரம் தயாரிக்கப்படுகிறது.", hi: "सरल ऑनबोर्डिंग से परिवार प्रोफ़ाइल आसानी से तैयार होती है।" },
+  "Parent Information": { en: "Parent Information", ta: "பெற்றோர் தகவல்", hi: "माता-पिता की जानकारी" },
+  "Name, phone number, and preferred language are confirmed first.": { en: "Name, phone number, and preferred language are confirmed first.", ta: "பெயர், தொலைபேசி எண் மற்றும் விருப்ப மொழி முதலில் உறுதி செய்யப்படும்.", hi: "नाम, फोन नंबर और पसंदीदा भाषा पहले सुनिश्चित की जाती है।" },
+  "Child Information": { en: "Child Information", ta: "குழந்தை தகவல்", hi: "बच्चे की जानकारी" },
+  "Age, date of birth, and basic profile details are collected.": { en: "Age, date of birth, and basic profile details are collected.", ta: "வயது, பிறந்த தேதி மற்றும் அடிப்படை விவரங்கள் சேகரிக்கப்படும்.", hi: "उम्र, जन्म तिथि और मूल प्रोफ़ाइल विवरण लिए जाते हैं।" },
+  "Medical Details": { en: "Medical Details", ta: "மருத்துவ விவரங்கள்", hi: "चिकित्सा विवरण" },
+  "Blood group, allergies, and important conditions are saved clearly.": { en: "Blood group, allergies, and important conditions are saved clearly.", ta: "இரத்த வகை, ஒவ்வாமைகள் மற்றும் முக்கிய நிலைகள் தெளிவாக சேமிக்கப்படும்.", hi: "ब्लड ग्रुप, एलर्जी और महत्वपूर्ण स्थितियां स्पष्ट रूप से सहेजी जाती हैं।" },
+  "Vaccination History": { en: "Vaccination History", ta: "தடுப்பூசி வரலாறு", hi: "टीकाकरण इतिहास" },
+  "Previous doses and upcoming milestones are prepared in a timeline.": { en: "Previous doses and upcoming milestones are prepared in a timeline.", ta: "முந்தைய தடுப்பூசிகள் மற்றும் அடுத்த நிலைகள் காலவரிசையில் தயாரிக்கப்படும்.", hi: "पिछली खुराक और आगामी पड़ाव समयरेखा में तैयार किए जाते हैं।" },
+  "Setup Complete": { en: "Setup Complete", ta: "அமைப்பு முடிந்தது", hi: "सेटअप पूरा" },
+  "Jeevitham is ready to guide today’s care in simple steps.": { en: "Jeevitham is ready to guide today’s care in simple steps.", ta: "இன்றைய பராமரிப்பை எளிய படிகளில் வழிகாட்ட ஜீவிதம் தயாராக உள்ளது.", hi: "जीवितम आज की देखभाल के लिए सरल कदमों में मार्गदर्शन देगा।" },
+  "Continue to Jeevitham": { en: "Continue to Jeevitham", ta: "ஜீவிதத்திற்குத் தொடரவும்", hi: "जीवितम पर जारी रखें" },
+  "Jeevi AI Assistant": { en: "Jeevi AI Assistant", ta: "ஜீவி AI உதவியாளர்", hi: "जीवी AI सहायक" },
+  "Friendly multilingual guidance for nutrition, parenting, vaccination, child health education, and next steps.": { en: "Friendly multilingual guidance for nutrition, parenting, vaccination, child health education, and next steps.", ta: "ஊட்டச்சத்து, பெற்றோர் பராமரிப்பு, தடுப்பூசி மற்றும் குழந்தை சுகாதாரத்திற்கான எளிய பல்மொழி வழிகாட்டல்.", hi: "पोषण, पालन-पोषण, टीकाकरण और बच्चे के स्वास्थ्य के लिए सरल बहुभाषी मार्गदर्शन।" },
+  "Hello, I am Jeevi. I can explain vaccine timing, child feeding, common symptoms, growth milestones, and safe next steps in simple language.": { en: "Hello, I am Jeevi. I can explain vaccine timing, child feeding, common symptoms, growth milestones, and safe next steps in simple language.", ta: "வணக்கம், நான் ஜீவி. தடுப்பூசி நேரம், குழந்தை உணவு, பொதுவான அறிகுறிகள் மற்றும் அடுத்த பாதுகாப்பான படிகளை எளிய மொழியில் விளக்குவேன்.", hi: "नमस्ते, मैं जीवी हूं। मैं टीके का समय, बच्चे का भोजन, सामान्य लक्षण और सुरक्षित अगले कदम सरल भाषा में समझा सकता हूं।" },
+  "Sample question": { en: "Sample question", ta: "மாதிரி கேள்வி", hi: "उदाहरण प्रश्न" },
+  "My child missed one vaccine. What should I do next?": { en: "My child missed one vaccine. What should I do next?", ta: "என் குழந்தை ஒரு தடுப்பூசியைத் தவறவிட்டது. அடுத்து என்ன செய்ய வேண்டும்?", hi: "मेरे बच्चे का एक टीका छूट गया। अब मुझे क्या करना चाहिए?" },
+  "Sample answer": { en: "Sample answer", ta: "மாதிரி பதில்", hi: "उदाहरण उत्तर" },
+  "Do not worry. Open Vaccination Timeline, check the missed dose, and contact the nearest care center shown in Hospitals.": { en: "Do not worry. Open Vaccination Timeline, check the missed dose, and contact the nearest care center shown in Hospitals.", ta: "கவலைப்பட வேண்டாம். தடுப்பூசி காலவரிசையைத் திறந்து, தவறிய தடுப்பூசியைச் சரிபார்த்து, மருத்துவமனைகளில் காட்டப்படும் அருகிலுள்ள மையத்தைத் தொடர்பு கொள்ளுங்கள்.", hi: "चिंता न करें। टीकाकरण समयरेखा खोलें, छूटी खुराक देखें और अस्पताल में दिखाए गए नजदीकी केंद्र से संपर्क करें।" },
+  "Multilingual-ready architecture": { en: "Multilingual-ready architecture", ta: "பல்மொழி தயாரான அமைப்பு", hi: "बहुभाषी तैयार संरचना" },
+  "Navigation, labels, buttons, and help content are now structured to scale across English, Tamil, and Hindi.": { en: "Navigation, labels, buttons, and help content are now structured to scale across English, Tamil, and Hindi.", ta: "வழிசெலுத்தல், பெயர்கள், பொத்தான்கள் மற்றும் உதவி உள்ளடக்கம் ஆங்கிலம், தமிழ், இந்தி ஆகியவற்றில் அமைக்கப்பட்டுள்ளது.", hi: "नेविगेशन, लेबल, बटन और सहायता सामग्री अंग्रेज़ी, तमिल और हिंदी के लिए तैयार हैं।" },
+  "Recent Activities": { en: "Recent Activities", ta: "சமீபத்திய செயல்பாடுகள்", hi: "हाल की गतिविधियां" },
+  "Recent care updates in a simple timeline.": { en: "Recent care updates in a simple timeline.", ta: "சமீபத்திய பராமரிப்பு புதுப்பிப்புகள் எளிய காலவரிசையில்.", hi: "हाल के देखभाल अपडेट सरल समयरेखा में।" },
+  "Dummy educational content for the product prototype.": { en: "Dummy educational content for the product prototype.", ta: "தயாரிப்பு மாதிரிக்கான கல்வி உள்ளடக்கம்.", hi: "उत्पाद प्रोटोटाइप के लिए शैक्षिक सामग्री।" },
+  Prototype: { en: "Prototype", ta: "மாதிரி", hi: "प्रोटोटाइप" },
+  "This educational content is currently a prototype. Video content will be available in future versions.": { en: "This educational content is currently a prototype. Video content will be available in future versions.", ta: "இந்த கல்வி உள்ளடக்கம் தற்போது ஒரு மாதிரி. வீடியோ உள்ளடக்கம் எதிர்கால பதிப்புகளில் கிடைக்கும்.", hi: "यह शैक्षिक सामग्री अभी प्रोटोटाइप है। वीडियो सामग्री भविष्य के संस्करणों में उपलब्ध होगी।" },
+  "Can my child eat chocolate biscuit every day?": { en: "Can my child eat chocolate biscuit every day?", ta: "என் குழந்தை தினமும் சாக்லேட் பிஸ்கட் சாப்பிடலாமா?", hi: "क्या मेरा बच्चा रोज़ चॉकलेट बिस्किट खा सकता है?" },
+  "What should I do before the MMR vaccine?": { en: "What should I do before the MMR vaccine?", ta: "MMR தடுப்பூசிக்கு முன் என்ன செய்ய வேண்டும்?", hi: "MMR टीके से पहले मुझे क्या करना चाहिए?" },
+  "Show me simple foods for better weight gain.": { en: "Show me simple foods for better weight gain.", ta: "சிறந்த எடை அதிகரிப்புக்கான எளிய உணவுகளைக் காட்டுங்கள்.", hi: "बेहतर वजन बढ़ाने के लिए सरल भोजन दिखाएं।" },
+  Companion: { en: "Companion", ta: "துணைவர்", hi: "साथी" },
+  "Jeevi AI": { en: "Jeevi AI", ta: "ஜீவி AI", hi: "जीवी AI" },
+};
+
+export function tx(text: string, language: AppLanguage) {
+  return t(uiText[text] ?? { en: text, ta: text, hi: text }, language);
 }

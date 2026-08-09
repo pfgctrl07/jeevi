@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { ActivityItem, AppLanguage } from "@/lib/data";
-import { t } from "@/lib/data";
+import { t, tx } from "@/lib/data";
 
 export function ActivityTimeline({
   items,
@@ -19,9 +19,9 @@ export function ActivityTimeline({
   return (
     <Card className="border-border/70 bg-card/88">
       <CardHeader>
-        <CardTitle>Recent Activities</CardTitle>
+        <CardTitle>{tx("Recent Activities", language)}</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Recent care updates in a simple timeline.
+          {tx("Recent care updates in a simple timeline.", language)}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">

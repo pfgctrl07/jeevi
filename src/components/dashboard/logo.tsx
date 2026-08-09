@@ -1,8 +1,12 @@
+import type { AppLanguage } from "@/lib/data";
+import { tx } from "@/lib/data";
+
 type LogoProps = {
   compact?: boolean;
+  language?: AppLanguage;
 };
 
-export function Logo({ compact = false }: LogoProps) {
+export function Logo({ compact = false, language = "en" }: LogoProps) {
   return (
     <div className="flex items-center gap-3">
       <img
@@ -32,7 +36,7 @@ export function Logo({ compact = false }: LogoProps) {
           }
         >
           Your Family Health
-          <span className="block">Companion</span>
+          <span className="block">{tx("Companion", language)}</span>
         </p>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { sidebarItems, t } from "@/lib/data";
+import { sidebarItems, t, tx } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useAppState } from "@/contexts/app-state-context";
 import { Logo } from "./logo";
@@ -22,7 +22,7 @@ export function Sidebar() {
   return (
     <>
       <div className="flex items-center justify-between rounded-[1.6rem] border border-border/70 bg-card/88 p-4 shadow-soft backdrop-blur lg:hidden">
-        <Logo compact />
+        <Logo compact language={selectedLanguage} />
         <Button
           variant="outline"
           size="icon"
@@ -60,9 +60,9 @@ export function Sidebar() {
           })}
         </nav>
         <div className="mt-auto rounded-2xl border border-border/70 bg-background/70 p-4">
-          <p className="text-sm font-semibold text-foreground">Care Tip</p>
+          <p className="text-sm font-semibold text-foreground">{tx("Care Tip", selectedLanguage)}</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Keep urgent help, doctor visits, and learning easy to find.
+            {tx("Keep urgent help, doctor visits, and learning easy to find.", selectedLanguage)}
           </p>
         </div>
       </aside>
@@ -86,7 +86,7 @@ export function Sidebar() {
               transition={{ type: "spring", stiffness: 260, damping: 26 }}
               className="fixed inset-y-0 left-0 z-50 flex w-[86%] max-w-80 flex-col border-r border-border/70 bg-card p-5 shadow-2xl lg:hidden"
             >
-              <Logo compact />
+              <Logo compact language={selectedLanguage} />
               <nav className="mt-8 space-y-2">
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
