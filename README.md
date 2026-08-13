@@ -82,15 +82,16 @@ Start the development server:
 npm run dev
 ```
 
-If the Vite dev server is slow or unavailable in your environment, you can serve the built app statically after building:
+To preview the production build:
 
 ```bash
 npm run build
-cd dist
-python3 -m http.server 4173
+npm run preview
 ```
 
-Then open:
+For Android or iOS devices on the same local network, start the development or preview server, then open the LAN URL printed by Vite (for example, `http://192.168.x.x:5173/`) in the device browser. The `dev` and `preview` scripts listen on the local network for this purpose.
+
+Then open the local URL printed by Vite, typically:
 
 ```bash
 http://127.0.0.1:4173/

@@ -12,6 +12,7 @@ import {
   type AppRole,
   type SectionKey,
 } from "@/lib/data";
+import { getStoredValue, setStoredValue } from "@/lib/storage";
 
 type AppStateContextValue = {
   activeSection: SectionKey;
@@ -39,7 +40,7 @@ function getInitialTheme(): "light" | "dark" {
     return "dark";
   }
 
-  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  const savedTheme = getStoredValue(THEME_STORAGE_KEY);
 
   if (savedTheme === "light" || savedTheme === "dark") {
     return savedTheme;
@@ -59,7 +60,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    setStoredValue(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   useEffect(() => {

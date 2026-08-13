@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { getStoredValue, removeStoredValue, setStoredValue } from "@/lib/storage";
 
 type AuthContextValue = {
   isAuthenticated: boolean;
@@ -24,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const storedValue = window.localStorage.getItem(STORAGE_KEY);
+    const storedValue = getStoredValue(STORAGE_KEY);
     setIsAuthenticated(storedValue === "true");
   }, []);
 
@@ -36,13 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, "true");
+    setStoredValue(STORAGE_KEY, "true");
     setIsAuthenticated(true);
     return true;
   }, []);
 
   const logout = useCallback(() => {
-    window.localStorage.removeItem(STORAGE_KEY);
+    removeStoredValue(STORAGE_KEY);
     setIsAuthenticated(false);
   }, []);
 

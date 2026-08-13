@@ -39,6 +39,10 @@ export function LoginForm() {
           <input
             id="email"
             type="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="email"
+            inputMode="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="h-full w-full bg-transparent py-3 text-base text-foreground outline-none placeholder:text-muted-foreground"
@@ -59,6 +63,9 @@ export function LoginForm() {
           <input
             id="password"
             type="password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="h-full w-full bg-transparent py-3 text-base text-foreground outline-none placeholder:text-muted-foreground"

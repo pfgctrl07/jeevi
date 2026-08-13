@@ -34,7 +34,7 @@ export function Sidebar() {
         </Button>
       </div>
 
-      <aside className="hidden min-h-[calc(100vh-2rem)] w-80 flex-col rounded-[2rem] border border-border/70 bg-card/88 p-5 shadow-soft backdrop-blur lg:flex">
+      <aside className="hidden min-h-[calc(100vh-2rem)] min-h-[calc(100dvh-2rem)] w-80 flex-col rounded-[2rem] border border-border/70 bg-card/88 p-5 shadow-soft backdrop-blur lg:flex">
         <Logo compact />
         <nav className="mt-8 space-y-2">
           {visibleItems.map((item) => {
@@ -84,7 +84,7 @@ export function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: "spring", stiffness: 260, damping: 26 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-[86%] max-w-80 flex-col border-r border-border/70 bg-card p-5 shadow-2xl lg:hidden"
+              className="safe-area-y fixed inset-y-0 left-0 z-50 flex w-[86%] max-w-80 flex-col overflow-y-auto border-r border-border/70 bg-card p-5 shadow-2xl lg:hidden"
             >
               <Logo compact />
               <nav className="mt-8 space-y-2">

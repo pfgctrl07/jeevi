@@ -12,7 +12,12 @@
     />
     <title>Jeevitham</title>
     <script>
-      const savedTheme = localStorage.getItem("jeevitham-theme");
+      let savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem("jeevitham-theme");
+      } catch {
+        // Storage can be unavailable in privacy-restricted browsers or webviews.
+      }
       if (savedTheme === "dark" || !savedTheme) {
         document.documentElement.classList.add("dark");
       }
