@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jeevitham</string>
+    <string name="title_activity_main">Jeevitham</string>
+    <string name="package_name">in.jeevitham.app</string>
+    <string name="custom_url_scheme">in.jeevitham.app</string>
+</resources>

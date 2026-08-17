@@ -30,6 +30,7 @@ import {
   type SectionKey,
 } from "@/lib/data";
 import { getModalContent } from "@/components/dashboard/modal-content";
+import { getStoredValue, setStoredValue } from "@/lib/storage";
 
 const ONBOARDING_KEY = "jeevitham-onboarding-complete";
 
@@ -75,7 +76,7 @@ export function DashboardPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (window.localStorage.getItem(ONBOARDING_KEY) !== "true") {
+    if (getStoredValue(ONBOARDING_KEY) !== "true") {
       setShowOnboarding(true);
     }
   }, []);
@@ -90,7 +91,7 @@ export function DashboardPage() {
   const primarySummaries = summaryItems.slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-6">
+    <main className="min-h-screen min-h-[100dvh] bg-background px-4 py-4 sm:px-6 sm:py-6">
       <div className="mx-auto flex max-w-[1480px] flex-col gap-4 lg:flex-row">
         <Sidebar />
 
@@ -398,7 +399,7 @@ export function DashboardPage() {
         onOpenChange={(open) => {
           setShowOnboarding(open);
           if (!open) {
-            window.localStorage.setItem(ONBOARDING_KEY, "true");
+            setStoredValue(ONBOARDING_KEY, "true");
           }
         }}
         title={tx("First Login Setup", selectedLanguage)}
@@ -423,7 +424,7 @@ export function DashboardPage() {
           <Button
             className="mt-2 w-full"
             onClick={() => {
-              window.localStorage.setItem(ONBOARDING_KEY, "true");
+              setStoredValue(ONBOARDING_KEY, "true");
               setShowOnboarding(false);
             }}
           >

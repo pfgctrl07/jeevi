@@ -63,8 +63,16 @@
     scroll-behavior: smooth;
   }
 
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     background-image: var(--hero-glow);
     transition:
@@ -95,6 +103,11 @@
 }
 
 @layer utilities {
+  .safe-area-y {
+    padding-top: calc(1.25rem + env(safe-area-inset-top));
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
   .text-balance {
     text-wrap: balance;
   }
