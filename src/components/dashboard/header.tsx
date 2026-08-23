@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Bell, ChevronDown, Globe, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { useAppState } from "@/contexts/app-state-context";
-import { languageOptions, roleOptions, t } from "@/lib/data";
+import { languageOptions, recentActivities, roleOptions, t } from "@/lib/data";
 import { useAuth } from "@/contexts/auth-context";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -13,6 +15,7 @@ export function Header() {
     setSelectedRole,
   } = useAppState();
   const { logout } = useAuth();
+  const [isNotificationsOpen, setNotificationsOpen] = useState(false);
 
   return (
     <header className="flex flex-col gap-4 rounded-[2rem] border border-border/70 bg-card/88 p-5 shadow-soft backdrop-blur sm:flex-row sm:items-center sm:justify-between">
@@ -43,9 +46,11 @@ export function Header() {
           variant="outline"
           size="icon"
           aria-label="Notifications"
-          className="border-border/70 bg-background/70 text-foreground hover:bg-muted"
+          onClick={() => setNotificationsOpen(true)}
+          className="relative border-border/70 bg-background/70 text-foreground hover:bg-muted"
         >
           <Bell className="h-5 w-5" />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-danger" />
         </Button>
 
         <div className="relative">
@@ -111,6 +116,34 @@ export function Header() {
           <LogOut className="h-5 w-5" />
         </Button>
       </div>
+
+      <Modal
+        open={isNotificationsOpen}
+        onOpenChange={setNotificationsOpen}
+        title="Notifications"
+        description="Recent updates across vaccination, appointments, and care records."
+      >
+        <div className="space-y-3">
+          {recentActivities.map((activity) => (
+            <div
+              key={activity.id}
+              className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold text-foreground">
+                  {t(activity.title, selectedLanguage)}
+                </p>
+                <p className="whitespace-nowrap text-xs text-muted-foreground">
+                  {t(activity.time, selectedLanguage)}
+                </p>
+              </div>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {t(activity.detail, selectedLanguage)}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </header>
   );
 }

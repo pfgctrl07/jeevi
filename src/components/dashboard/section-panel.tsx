@@ -9,6 +9,12 @@ import { EmptyState } from "./empty-state";
 import { moduleSections, t, type SectionKey } from "@/lib/data";
 import { useAppState } from "@/contexts/app-state-context";
 import { LearningPrototype } from "./learning-prototype";
+import { AbhaConnect } from "./abha-connect";
+import { NutritionScanner } from "./nutrition-scanner";
+import { TelemedicineCall } from "./telemedicine-call";
+import { TrustedMarketplace } from "./trusted-marketplace";
+
+const richSections: SectionKey[] = ["learning", "abha", "nutrition", "telemedicine", "marketplace"];
 
 export function SectionPanel({ section }: { section: SectionKey }) {
   const { selectedLanguage } = useAppState();
@@ -32,8 +38,18 @@ export function SectionPanel({ section }: { section: SectionKey }) {
         {section === "learning" ? (
           <LearningPrototype language={selectedLanguage} />
         ) : null}
+        {section === "abha" ? <AbhaConnect language={selectedLanguage} /> : null}
+        {section === "nutrition" ? (
+          <NutritionScanner language={selectedLanguage} />
+        ) : null}
+        {section === "telemedicine" ? (
+          <TelemedicineCall language={selectedLanguage} />
+        ) : null}
+        {section === "marketplace" ? (
+          <TrustedMarketplace language={selectedLanguage} />
+        ) : null}
 
-        {section !== "learning" ? (
+        {!richSections.includes(section) ? (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {meta.highlights.map((item) => {
               const HighlightIcon = item.icon;

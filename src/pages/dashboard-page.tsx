@@ -11,6 +11,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
+import { CryTranslator } from "@/components/dashboard/cry-translator";
 import { FeatureCard } from "@/components/dashboard/feature-card";
 import { Header } from "@/components/dashboard/header";
 import { Modal } from "@/components/ui/modal";
@@ -188,6 +189,10 @@ export function DashboardPage() {
                 />
               ))}
             </div>
+          </section>
+
+          <section>
+            <CryTranslator language={selectedLanguage} />
           </section>
 
           <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
