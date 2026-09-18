@@ -4,6 +4,10 @@ dist
 .DS_Store
 *.tsbuildinfo
 node_modules/.tsbuildcache
+server/.env
+server/data/patients.json
+server/data/activity.json
+graphify-out
 
 # Android build output
 android/app/build

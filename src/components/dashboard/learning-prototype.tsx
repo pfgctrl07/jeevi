@@ -32,7 +32,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => setActiveLesson(lesson)}
-                  className="group overflow-hidden rounded-[1.6rem] border border-border/70 bg-card/92 text-left shadow-soft transition hover:-translate-y-1 hover:shadow-panel"
+                  className="group overflow-hidden rounded-xl border border-border/70 bg-card text-left shadow-soft transition hover:-translate-y-1 hover:shadow-panel"
                 >
                   <div
                     className={`relative h-44 bg-gradient-to-br ${lesson.gradient} p-5`}
@@ -86,7 +86,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
         {activeLesson ? (
           <div className="space-y-5">
             <div
-              className={`relative h-56 rounded-[1.6rem] bg-gradient-to-br ${activeLesson.gradient} p-6`}
+              className={`relative h-56 rounded-xl bg-gradient-to-br ${activeLesson.gradient} p-6`}
             >
               <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-700">
                 {tx("Prototype", language)}
@@ -105,7 +105,7 @@ export function LearningPrototype({ language }: { language: AppLanguage }) {
               {t(activeLesson.description, language)}
             </p>
 
-            <div className="rounded-[1.4rem] border border-primary/20 bg-primary/10 px-4 py-4 text-sm leading-7 text-foreground">
+            <div className="rounded-lg border border-primary/20 bg-primary/10 px-4 py-4 text-sm leading-7 text-foreground">
               {tx("This educational content is currently a prototype. Video content will be available in future versions.", language)}
             </div>
           </div>

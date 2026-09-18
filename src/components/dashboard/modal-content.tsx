@@ -10,7 +10,7 @@ import {
 
 function ListRow({ title, detail }: { title: string; detail: string }) {
   return (
-    <div className="flex items-start justify-between gap-3 rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+    <div className="flex items-start justify-between gap-3 rounded-2xl border border-border/70 bg-background px-4 py-3">
       <p className="font-medium text-foreground">{title}</p>
       <p className="text-right text-sm text-muted-foreground">{detail}</p>
     </div>
@@ -20,13 +20,13 @@ function ListRow({ title, detail }: { title: string; detail: string }) {
 function toneClass(tone: ModalContent["tone"]) {
   switch (tone) {
     case "success":
-      return "border-emerald-500/20 bg-emerald-500/10 text-emerald-100";
+      return "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200";
     case "warning":
-      return "border-amber-500/20 bg-amber-500/10 text-amber-100";
+      return "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-200";
     case "danger":
-      return "border-red-500/20 bg-red-500/10 text-red-100";
+      return "border-red-500/20 bg-red-500/10 text-red-700 dark:text-red-200";
     default:
-      return "border-primary/20 bg-primary/10 text-blue-100";
+      return "border-primary/20 bg-primary/10 text-primary dark:text-primary";
   }
 }
 

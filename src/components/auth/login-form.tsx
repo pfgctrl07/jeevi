@@ -34,7 +34,7 @@ export function LoginForm() {
         >
           Email
         </label>
-        <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-border/70 bg-background/72 px-4 focus-within:border-primary">
+        <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-border/70 bg-background px-4 focus-within:border-primary">
           <Mail className="h-5 w-5 text-muted-foreground" />
           <input
             id="email"
@@ -58,7 +58,7 @@ export function LoginForm() {
         >
           Password
         </label>
-        <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-border/70 bg-background/72 px-4 focus-within:border-primary">
+        <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-border/70 bg-background px-4 focus-within:border-primary">
           <LockKeyhole className="h-5 w-5 text-muted-foreground" />
           <input
             id="password"
@@ -75,12 +75,12 @@ export function LoginForm() {
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
           {error}
         </div>
       ) : null}
 
-      <Button className="w-full" size="lg" type="submit">
+      <Button className="w-full rounded-full" size="lg" type="submit">
         <HeartPulse className="h-5 w-5" />
         Sign In
       </Button>

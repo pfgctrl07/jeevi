@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  defaultSectionForRole,
   sidebarItems,
   type AppLanguage,
   type AppRole,
@@ -37,7 +38,7 @@ const THEME_STORAGE_KEY = "jeevitham-theme";
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") {
-    return "dark";
+    return "light";
   }
 
   const savedTheme = getStoredValue(THEME_STORAGE_KEY);
@@ -46,7 +47,7 @@ function getInitialTheme(): "light" | "dark" {
     return savedTheme;
   }
 
-  return "dark";
+  return "light";
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
@@ -69,7 +70,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     );
 
     if (!canAccessSection) {
-      setActiveSection("dashboard");
+      // Each role lands on its own portal, not the parent's child-centric
+      // "dashboard" — a hospital or doctor login has no single child to show.
+      setActiveSection(defaultSectionForRole[selectedRole]);
     }
   }, [activeSection, selectedRole]);
 

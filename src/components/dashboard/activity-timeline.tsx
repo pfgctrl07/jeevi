@@ -1,56 +1,87 @@
-import { CheckCircle2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import type { ActivityItem, AppLanguage } from "@/lib/data";
-import { t, tx } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { Bot, CheckCircle2, Pencil, Sparkles, Trash2, UserPlus } from "lucide-react";
+import { ListRow, ListSection } from "@/components/ui/list";
+import { tx } from "@/lib/data";
+import { api, type ActivityEntry } from "@/lib/api";
+import { useAppState } from "@/contexts/app-state-context";
 
-export function ActivityTimeline({
-  items,
-  language,
-}: {
-  items: ActivityItem[];
-  language: AppLanguage;
-}) {
+const iconByType: Record<string, typeof CheckCircle2> = {
+  patient_added: UserPlus,
+  patient_updated: Pencil,
+  patient_removed: Trash2,
+  ai_chat: Bot,
+  nutrition_check: Sparkles,
+};
+
+function formatRelativeTime(iso: string) {
+  const date = new Date(iso);
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.round(diffMs / 60000);
+
+  if (diffMinutes < 1) return "Just now";
+  if (diffMinutes < 60) return `${diffMinutes} min ago`;
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.round(diffHours / 24);
+  return `${diffDays}d ago`;
+}
+
+export function ActivityTimeline() {
+  const { selectedLanguage } = useAppState();
+  const [items, setItems] = useState<ActivityEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    function refresh() {
+      api
+        .getActivities()
+        .then((data) => {
+          if (!cancelled) setItems(data);
+        })
+        .catch(() => {
+          if (!cancelled) setItems([]);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }
+
+    refresh();
+    // Poll rather than push (no websocket backend) so actions taken
+    // elsewhere in the app — adding a patient, running a nutrition check —
+    // show up here without needing a manual page reload.
+    const interval = setInterval(refresh, 8000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
-    <Card className="border-border/70 bg-card/88">
-      <CardHeader>
-        <CardTitle>{tx("Recent Activities", language)}</CardTitle>
-        <CardDescription className="text-muted-foreground">
-          {tx("Recent care updates in a simple timeline.", language)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {items.map((item, index) => (
-          <div key={item.id} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              {index < items.length - 1 ? (
-                <div className="mt-2 h-full w-px bg-border/70" />
-              ) : null}
-            </div>
-            <div className="pb-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="font-semibold text-foreground">
-                  {t(item.title, language)}
-                </p>
-                <span className="rounded-full bg-background/72 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                  {t(item.time, language)}
-                </span>
-              </div>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {t(item.detail, language)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+    <ListSection
+      title={tx("Recent Activities", selectedLanguage)}
+      description={tx("Real actions taken in the app, most recent first.", selectedLanguage)}
+    >
+      {loading ? (
+        <div className="px-4 py-3 text-sm text-muted-foreground">{tx("Loading…", selectedLanguage)}</div>
+      ) : items.length === 0 ? (
+        <div className="px-4 py-3 text-sm text-muted-foreground">
+          {tx("Nothing has happened yet — add a patient, ask Jeevi a question, or run a nutrition check to see it here.", selectedLanguage)}
+        </div>
+      ) : (
+        items.map((item) => (
+          <ListRow
+            key={item.id}
+            icon={iconByType[item.type] ?? CheckCircle2}
+            label={item.title}
+            detail={item.detail}
+            value={formatRelativeTime(item.time)}
+          />
+        ))
+      )}
+    </ListSection>
   );
 }

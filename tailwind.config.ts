@@ -42,15 +42,18 @@ const config: Config = {
         },
       },
       borderRadius: {
-        xl: "1rem",
-        "2xl": "1.25rem",
+        lg: "0.5rem",
+        xl: "0.625rem",
+        "2xl": "0.75rem",
       },
       boxShadow: {
-        soft: "0 30px 60px -34px rgba(0, 0, 0, 0.65)",
-        panel: "0 20px 40px -24px rgba(37, 99, 235, 0.35)",
+        soft: "0 1px 2px rgba(35, 41, 39, 0.04), 0 2px 6px rgba(35, 41, 39, 0.05)",
+        panel: "0 1px 2px rgba(27, 122, 138, 0.12), 0 2px 6px rgba(27, 122, 138, 0.14)",
       },
       fontFamily: {
         sans: [
+          "Hind",
+          "\"Hind Madurai\"",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",

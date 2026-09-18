@@ -22,31 +22,27 @@ export function FeatureCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
+      transition={{ delay: index * 0.05, duration: 0.25 }}
       className="h-full"
     >
-      <Card className="h-full overflow-hidden border-border/70 bg-card/88">
+      <Card className="h-full border-border/70 bg-card">
         <CardContent className="flex h-full flex-col p-5">
-          <div
-            className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.accent}`}
-          >
-            <Icon className="h-7 w-7 text-white" />
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Icon className="h-5 w-5" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">
+              {t(feature.title, language)}
+            </h3>
           </div>
-          <div className="mb-2 inline-flex w-fit rounded-full border border-border/70 bg-background/72 px-3 py-1 text-xs font-semibold text-muted-foreground">
-            {t(feature.status, language)}
-          </div>
-          <h3 className="text-lg font-semibold text-foreground">
-            {t(feature.title, language)}
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <p className="text-sm leading-6 text-muted-foreground">
             {t(feature.description, language)}
           </p>
           <Button
-            className="mt-auto w-full justify-between"
+            className="mt-4 w-full justify-between"
             variant="outline"
-            size="lg"
             onClick={() => onOpen(feature.id)}
           >
             {t(feature.buttonLabel, language)}

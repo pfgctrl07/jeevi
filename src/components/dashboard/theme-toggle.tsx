@@ -12,7 +12,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className="relative flex h-12 w-[110px] items-center rounded-full border border-border/70 bg-background/80 p-1 shadow-soft transition-colors duration-300"
+      className="relative flex h-12 w-[110px] items-center rounded-full border border-border/70 bg-background p-1 shadow-soft transition-colors duration-300"
     >
       <motion.span
         layout

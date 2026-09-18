@@ -2,57 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Palette is sampled from the Jeevitham logo itself (teal hexagon, warm
+  copper mother-and-child line art, cream ground) rather than a generic
+  dashboard blue, so the product actually looks like the brand.
+*/
 @layer base {
   :root {
-    --background: 248 250 252;
-    --foreground: 30 41 59;
+    --background: 250 247 240;
+    --foreground: 35 41 39;
     --card: 255 255 255;
-    --card-foreground: 15 23 42;
-    --muted: 241 245 249;
-    --muted-foreground: 100 116 139;
-    --border: 226 232 240;
-    --input: 203 213 225;
-    --ring: 37 99 235;
-    --primary: 37 99 235;
+    --card-foreground: 30 36 35;
+    --muted: 241 235 222;
+    --muted-foreground: 111 106 93;
+    --border: 228 219 200;
+    --input: 214 202 178;
+    --ring: 27 122 138;
+    --primary: 27 122 138;
     --primary-foreground: 255 255 255;
-    --secondary: 14 165 233;
+    --secondary: 191 118 71;
     --secondary-foreground: 255 255 255;
-    --success: 34 197 94;
-    --success-foreground: 220 252 231;
-    --warning: 245 158 11;
-    --warning-foreground: 254 243 199;
-    --danger: 239 68 68;
-    --danger-foreground: 254 226 226;
+    --success: 33 138 90;
+    --success-foreground: 236 250 240;
+    --warning: 180 122 32;
+    --warning-foreground: 254 246 224;
+    --danger: 191 68 56;
+    --danger-foreground: 253 232 228;
     --hero-glow:
-      radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 24%),
-      radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 22%),
-      linear-gradient(180deg, #f8fbff, #eef4fb 72%, #f8fafc);
+      radial-gradient(circle at top left, rgba(27, 122, 138, 0.1), transparent 26%),
+      radial-gradient(circle at top right, rgba(191, 118, 71, 0.1), transparent 24%),
+      linear-gradient(180deg, #fdfbf6, #f7f1e6 72%, #faf6ee);
   }
 
   .dark {
-    --background: 5 7 11;
-    --foreground: 229 238 248;
-    --card: 11 17 28;
-    --card-foreground: 229 238 248;
-    --muted: 15 23 36;
-    --muted-foreground: 148 163 184;
-    --border: 31 42 61;
-    --input: 36 50 71;
-    --ring: 37 99 235;
-    --primary: 37 99 235;
+    --background: 10 17 18;
+    --foreground: 231 238 234;
+    --card: 16 26 27;
+    --card-foreground: 231 238 234;
+    --muted: 21 32 33;
+    --muted-foreground: 148 163 158;
+    --border: 34 49 50;
+    --input: 41 58 60;
+    --ring: 68 182 201;
+    --primary: 45 152 172;
     --primary-foreground: 255 255 255;
-    --secondary: 14 165 233;
-    --secondary-foreground: 255 255 255;
-    --success: 34 197 94;
-    --success-foreground: 220 252 231;
-    --warning: 245 158 11;
-    --warning-foreground: 254 243 199;
-    --danger: 239 68 68;
-    --danger-foreground: 254 226 226;
+    --secondary: 214 145 98;
+    --secondary-foreground: 32 21 14;
+    --success: 74 190 138;
+    --success-foreground: 12 32 22;
+    --warning: 214 164 78;
+    --warning-foreground: 36 26 8;
+    --danger: 214 104 92;
+    --danger-foreground: 40 15 13;
     --hero-glow:
-      radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 24%),
-      radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 22%),
-      linear-gradient(180deg, #05070b, #05070b);
+      radial-gradient(circle at top left, rgba(68, 182, 201, 0.16), transparent 26%),
+      radial-gradient(circle at top right, rgba(214, 145, 98, 0.12), transparent 24%),
+      linear-gradient(180deg, #060b0c, #05090a);
   }
 
   * {
@@ -93,7 +98,7 @@
   }
 
   ::selection {
-    background: rgba(37, 99, 235, 0.18);
+    background: rgba(27, 122, 138, 0.2);
   }
 
   img {
@@ -110,5 +115,16 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Bold editorial hero for the sign-in page — a deliberate brand moment,
+     distinct from the calm cream interior of the app itself. Built from
+     the same teal + copper brand colors, just turned up. */
+  .auth-hero {
+    background:
+      radial-gradient(circle at 15% 15%, rgba(78, 199, 217, 0.55), transparent 48%),
+      radial-gradient(circle at 85% 8%, rgba(214, 145, 98, 0.35), transparent 42%),
+      radial-gradient(circle at 75% 85%, rgba(27, 122, 138, 0.5), transparent 55%),
+      linear-gradient(160deg, #0d5566 0%, #0b3a4d 48%, #082433 100%);
   }
 }

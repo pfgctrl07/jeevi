@@ -11,6 +11,12 @@
       content="Jeevitham is a premium maternal and child healthcare operating system for families, doctors, and hospitals."
     />
     <title>Jeevitham</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Hind+Madurai:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script>
       let savedTheme = null;
       try {
@@ -18,7 +24,7 @@
       } catch {
         // Storage can be unavailable in privacy-restricted browsers or webviews.
       }
-      if (savedTheme === "dark" || !savedTheme) {
+      if (savedTheme === "dark") {
         document.documentElement.classList.add("dark");
       }
     </script>

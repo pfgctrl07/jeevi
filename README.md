@@ -114,4 +114,21 @@ The Jeevitham logo used in this project is preserved as provided and should not 
 
 ## Status
 
-This is a UI/UX-first healthcare prototype intended for demos, investor presentations, and product direction work. It is frontend-only and does not include a production backend or real medical integrations.
+This is a healthcare prototype intended for demos, investor presentations, and product direction work. Login is still frontend-only (demo credentials above). Patient records, vaccination/prescription/visit-note writes, the AI chat assistant, and the AI nutrition analyzer are backed by a real Express API (`server/`) with Google Gemini — see `server/.env.example` for the env vars it needs.
+
+## Deployment
+
+The frontend (this Vite app) deploys to Vercel; the API (`server/`) deploys to Render as a separate service.
+
+### Backend — Render
+
+1. In the Render dashboard, choose **New > Blueprint** and point it at this repo. Render reads `render.yaml` at the repo root and provisions a web service rooted at `server/` automatically.
+2. When prompted, set the env vars marked `sync: false` in `render.yaml`:
+   - `GEMINI_API_KEY` — from [aistudio.google.com](https://aistudio.google.com).
+   - `CORS_ORIGIN` — leave blank until the Vercel domain exists, then set it to that domain (e.g. `https://jeevitham.vercel.app`) and redeploy to lock the API down to just that origin.
+3. Render assigns a public URL like `https://jeevitham-api.onrender.com`. The API has no database — patient/activity data lives in a JSON file inside the service's container and resets to the sample seed data on every redeploy or cold restart. That's fine for a demo; a real deployment needs a real database before it holds real patient data.
+
+### Frontend — Vercel
+
+1. Import this repo as a new Vercel project. It auto-detects Vite (build command `npm run build`, output `dist`); `vercel.json` adds the SPA rewrite React Router needs.
+2. Set the project env var `VITE_API_URL` to the Render URL from above (e.g. `https://jeevitham-api.onrender.com`), then redeploy.

@@ -8,7 +8,7 @@ export function EmptyState({
   description: string;
 }) {
   return (
-    <div className="rounded-[1.6rem] border border-dashed border-border/70 bg-background/72 p-8 text-center">
+    <div className="rounded-xl border border-dashed border-border/70 bg-background p-8 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary shadow-soft">
         <Inbox className="h-6 w-6" />
       </div>

@@ -1,36 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  BookOpenText,
-  Bot,
-  CalendarDays,
-  CheckCircle2,
-  HeartPulse,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-} from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
-import { FeatureCard } from "@/components/dashboard/feature-card";
-import { Header } from "@/components/dashboard/header";
+import { TopNav } from "@/components/dashboard/top-nav";
 import { Modal } from "@/components/ui/modal";
 import { SectionPanel } from "@/components/dashboard/section-panel";
-import { Sidebar } from "@/components/dashboard/sidebar";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { LiveSummary } from "@/components/dashboard/live-summary";
+import { OrgSummary } from "@/components/dashboard/org-summary";
+import { ListRow, ListSection } from "@/components/ui/list";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useAppState } from "@/contexts/app-state-context";
-import {
-  moduleSections,
-  priorityCards,
-  recentActivities,
-  summaryItems,
-  t,
-  tx,
-  type SectionKey,
-} from "@/lib/data";
+import { defaultSectionForRole, moduleSections, priorityCards, t, tx, type SectionKey } from "@/lib/data";
 import { getModalContent } from "@/components/dashboard/modal-content";
+import { JeeviChat } from "@/components/dashboard/jeevi-chat";
 import { getStoredValue, setStoredValue } from "@/lib/storage";
+import { usePrimaryPatient } from "@/hooks/use-primary-patient";
 
 const ONBOARDING_KEY = "jeevitham-onboarding-complete";
 
@@ -60,7 +43,6 @@ const onboardingSteps = [
 const assistantPrompts = [
   "Can my child eat chocolate biscuit every day?",
   "What should I do before the MMR vaccine?",
-  "Show me simple foods for better weight gain.",
 ];
 
 export function DashboardPage() {
@@ -87,299 +69,145 @@ export function DashboardPage() {
   );
 
   const activeHeading = moduleSections[activeSection];
-  const ActiveIcon = activeHeading.icon;
-  const primarySummaries = summaryItems.slice(0, 3);
+
+  const { patient: primaryPatient } = usePrimaryPatient();
+  const liveDescription = primaryPatient?.doctor
+    ? { en: `${primaryPatient.doctor} — next visit`, ta: `${primaryPatient.doctor} — அடுத்த சந்திப்பு`, hi: `${primaryPatient.doctor} — अगली मुलाकात` }
+    : null;
+  const liveStatus = primaryPatient?.nextAppointment
+    ? (() => {
+        const formatted = new Date(primaryPatient.nextAppointment).toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        return { en: formatted, ta: formatted, hi: formatted };
+      })()
+    : null;
+  const liveCards = priorityCards
+    .filter((card) => card.roles.includes(selectedRole))
+    .map((card) =>
+      card.id === "appointments" && selectedRole === "parent" && liveDescription && liveStatus
+        ? { ...card, description: liveDescription, status: liveStatus }
+        : card,
+    );
+
+  // The quick-actions list and activity feed are the role's home-screen
+  // chrome — they belong on the landing section only. Anywhere else, the
+  // visitor already chose a focused task, so show just that task, full-width.
+  const isLanding = activeSection === defaultSectionForRole[selectedRole];
 
   return (
-    <main className="min-h-screen min-h-[100dvh] bg-background px-4 py-4 sm:px-6 sm:py-6">
-      <div className="mx-auto flex max-w-[1480px] flex-col gap-4 lg:flex-row">
-        <Sidebar />
+    <div className="min-h-screen min-h-[100dvh] bg-background">
+      <TopNav />
 
-        <div className="flex-1 space-y-5">
-          <Header />
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6">
+        {/* Hero — asymmetric two-column, same bold gradient + glass language as the sign-in page. */}
+        <section className="auth-hero relative overflow-hidden rounded-2xl px-5 py-8 sm:px-8 sm:py-10">
+          <img
+            src="/jeevitham-logo.jpeg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-24 -top-16 hidden w-[26rem] rounded-full opacity-[0.1] mix-blend-luminosity lg:block"
+          />
+          <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div>
+              <span className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-md">
+                {t(activeHeading.title, selectedLanguage)}
+              </span>
+              <h1 className="mt-4 text-balance text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                {tx(
+                  selectedRole === "parent"
+                    ? "Welcome back, Priya 👋"
+                    : selectedRole === "doctor"
+                      ? "Welcome back, Care Doctor 👋"
+                      : "Welcome back, Hospital Desk 👋",
+                  selectedLanguage,
+                )}
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/70 sm:text-base">
+                {tx(
+                  selectedRole === "parent"
+                    ? "See the next vaccine, next appointment, health status, and urgent care in one view."
+                    : selectedRole === "doctor"
+                      ? "Follow vaccinations, appointments, and prescriptions without admin-style clutter."
+                      : "Manage campaigns, care teams, and summaries with simple healthcare-first screens.",
+                  selectedLanguage,
+                )}
+              </p>
 
-          <motion.section
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2rem] border border-border/70 bg-card/88 p-6 shadow-soft"
-          >
-            <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-              <div className="max-w-3xl">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 py-1 text-sm font-medium text-primary">
-                  <ActiveIcon className="h-4 w-4" />
-                  {t(activeHeading.title, selectedLanguage)}
-                </div>
-                <h2 className="text-balance text-3xl font-semibold leading-tight text-foreground sm:text-4xl">
-                  {tx(selectedRole === "parent" ? "Family healthcare made simple for today." : selectedRole === "doctor" ? "Clear care workflows for every child visit." : "A cleaner maternal and child healthcare workspace.", selectedLanguage)}
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                  {tx(selectedRole === "parent" ? "See the next vaccine, next appointment, emergency help, and health learning within a few seconds." : "Important tasks stay visible first, with simple wording and less dashboard clutter.", selectedLanguage)}
-                </p>
-              </div>
-
-              <div className="grid gap-3 rounded-[1.6rem] border border-border/70 bg-background/72 p-4 sm:grid-cols-2 xl:min-w-[380px]">
-                {primarySummaries.slice(0, 2).map((item) => (
-                  <div key={item.title.en} className="rounded-2xl bg-card/80 p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {t(item.title, selectedLanguage)}
-                    </p>
-                    <p className="mt-1 text-lg font-semibold text-foreground">
-                      {t(item.value, selectedLanguage)}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t(item.supporting, selectedLanguage)}
-                    </p>
-                  </div>
-                ))}
-                <Button
-                  className="sm:col-span-2"
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
                   onClick={() => setAssistantOpen(true)}
+                  className="inline-flex items-center gap-3 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-semibold text-slate-900 shadow-xl transition hover:bg-white/90"
                 >
                   {tx("Ask Jeevi AI", selectedLanguage)}
-                </Button>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white">
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </span>
+                </button>
               </div>
-            </div>
-          </motion.section>
-
-          <section className="grid gap-4 md:grid-cols-3">
-            {primarySummaries.map((item, index) => (
-              <StatCard
-                key={item.title.en}
-                item={item}
-                index={index}
-                language={selectedLanguage}
-              />
-            ))}
-          </section>
-
-          <section className="space-y-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h3 className="text-xl font-semibold text-foreground">
-                    {tx(selectedRole === "parent" ? "What should I do next?" : selectedRole === "doctor" ? "Today’s care priorities" : "Hospital care priorities", selectedLanguage)}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                    {tx(selectedRole === "parent" ? "The most important actions stay large, simple, and easy to tap." : "Priority care actions are shown first with less visual noise.", selectedLanguage)}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-              {priorityCards.map((feature, index) => (
-                <FeatureCard
-                  key={feature.id}
-                  feature={feature}
-                  index={index}
-                  language={selectedLanguage}
-                  onOpen={(featureId) => {
-                    setActiveSection(featureId);
-                    setOpenModal(featureId);
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-
-          <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-            <SectionPanel section={activeSection} />
-
-            <div className="space-y-4">
-              <Card className="border-border/70 bg-card/88">
-                <CardContent className="space-y-4 p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-danger/10 text-danger">
-                      <HeartPulse className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-foreground">{tx("Emergency Access", selectedLanguage)}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {tx("The fastest way to get help should always stay visible.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3">
-                    <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
-                      <p className="text-sm text-muted-foreground">{tx("Ambulance", selectedLanguage)}</p>
-                      <p className="mt-1 text-lg font-semibold text-foreground">108</p>
-                    </div>
-                    <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
-                      <p className="text-sm text-muted-foreground">{tx("Women Helpline", selectedLanguage)}</p>
-                      <p className="mt-1 text-lg font-semibold text-foreground">181</p>
-                    </div>
-                    <Button
-                      variant="danger"
-                      className="w-full"
-                      onClick={() => {
-                        setActiveSection("emergency");
-                        setOpenModal("emergency");
-                      }}
+              {selectedRole === "parent" ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {assistantPrompts.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => setAssistantOpen(true)}
+                      className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition hover:bg-white/20"
                     >
-                      {tx("Open Emergency Contacts", selectedLanguage)}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/70 bg-card/88">
-                <CardContent className="space-y-4 p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                      <Sparkles className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-foreground">{tx("Jeevi AI", selectedLanguage)}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {tx("Quick help for vaccines, food, and simple next steps.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    {assistantPrompts.map((prompt) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() => setAssistantOpen(true)}
-                        className="w-full rounded-2xl border border-border/70 bg-background/72 px-4 py-3 text-left text-sm text-foreground transition hover:bg-muted"
-                      >
-                {tx(prompt, selectedLanguage)}
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      {tx(prompt, selectedLanguage)}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
-          </section>
 
-          <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-            <ActivityTimeline items={recentActivities} language={selectedLanguage} />
+            {/* At a glance: one child's record for a parent, facility-wide counts for staff — never a stranger's child under a staff login. */}
+            {selectedRole === "parent" ? (
+              <LiveSummary layout="stack" />
+            ) : (
+              <OrgSummary variant={selectedRole} layout="stack" />
+            )}
+          </div>
+        </section>
 
-            <Card className="border-border/70 bg-card/88">
-              <CardContent className="space-y-4 p-6">
-                <div>
-                    <h3 className="text-xl font-semibold text-foreground">{tx("Popular Services", selectedLanguage)}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {tx("The most useful family healthcare paths stay visible even on a first visit.", selectedLanguage)}
-                  </p>
-                </div>
+        {isLanding ? (
+          /* Home view: quick-actions list + focused panel, activity feed alongside. */
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] lg:items-start">
+            <div className="space-y-6">
+              <ListSection
+                title={tx("What should I do next?", selectedLanguage)}
+                description={tx("Tap any item for details.", selectedLanguage)}
+              >
+                {liveCards.map((feature) => (
+                  <ListRow
+                    key={feature.id}
+                    icon={feature.icon}
+                    label={t(feature.title, selectedLanguage)}
+                    detail={t(feature.description, selectedLanguage)}
+                    onClick={() => {
+                      setActiveSection(feature.id);
+                      setOpenModal(feature.id);
+                    }}
+                    trailing={<ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />}
+                  />
+                ))}
+              </ListSection>
 
-                <div className="grid gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("appointments")}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 p-4 text-left transition hover:bg-muted"
-                  >
-                    <CalendarDays className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{tx("Appointments", selectedLanguage)}</p>
-                      <p className="mt-1 font-semibold text-foreground">
-                        {tx("Manage upcoming doctor visits and follow-ups.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("hospitals")}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 p-4 text-left transition hover:bg-muted"
-                  >
-                    <Stethoscope className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{tx("Doctor Information", selectedLanguage)}</p>
-                      <p className="mt-1 font-semibold text-foreground">
-                        {tx("Find care centers, contacts, and support nearby.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("learning")}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 p-4 text-left transition hover:bg-muted"
-                  >
-                    <BookOpenText className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{tx("Health Learning", selectedLanguage)}</p>
-                      <p className="mt-1 font-semibold text-foreground">
-                        {tx("Open pregnancy, feeding, and child care prototype lessons.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("vaccination")}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 p-4 text-left transition hover:bg-muted"
-                  >
-                    <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{tx("Vaccination", selectedLanguage)}</p>
-                      <p className="mt-1 font-semibold text-foreground">
-                        {tx("Review vaccine schedule and due dates clearly.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSection("records")}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 p-4 text-left transition hover:bg-muted"
-                  >
-                    <Bot className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{tx("Patient Services", selectedLanguage)}</p>
-                      <p className="mt-1 font-semibold text-foreground">
-                        {tx("Keep records, prescriptions, and notes together.", selectedLanguage)}
-                      </p>
-                    </div>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
+              <SectionPanel section={activeSection} />
+            </div>
 
-          <section className="grid gap-4 md:grid-cols-2">
-            <Card className="border-border/70 bg-card/88">
-              <CardContent className="space-y-4 p-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">{tx("Learning This Week", selectedLanguage)}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {tx("Prototype lesson shelves make the learning area look real without streaming video.", selectedLanguage)}
-                  </p>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="w-full justify-between"
-                  onClick={() => setActiveSection("learning")}
-                >
-                  {tx("Open Learning Hub", selectedLanguage)}
-                  <BookOpenText className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/70 bg-card/88">
-              <CardContent className="space-y-4 p-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">{tx("Need Help Now?", selectedLanguage)}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {tx("Use emergency contacts first, then continue with care, learning, or appointments.", selectedLanguage)}
-                  </p>
-                </div>
-
-                <Button
-                  variant="danger"
-                  className="w-full"
-                  onClick={() => {
-                    setActiveSection("emergency");
-                    setOpenModal("emergency");
-                  }}
-                >
-                  {tx("Open Emergency", selectedLanguage)}
-                </Button>
-              </CardContent>
-            </Card>
-          </section>
-        </div>
-      </div>
+            <div className="space-y-6">
+              <ActivityTimeline />
+            </div>
+          </div>
+        ) : (
+          /* Task view: the visitor already chose what to do — show only that, full-width. */
+          <SectionPanel section={activeSection} />
+        )}
+      </main>
 
       <Modal
         open={Boolean(currentModal)}
@@ -409,9 +237,9 @@ export function DashboardPage() {
           {onboardingSteps.map((step, index) => (
             <div
               key={step.title}
-              className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/72 px-4 py-3"
+              className="flex items-start gap-3 rounded-md border border-border/70 bg-background px-4 py-3"
             >
-              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
                 {index + 1}
               </div>
               <div>
@@ -437,49 +265,10 @@ export function DashboardPage() {
         open={isAssistantOpen}
         onOpenChange={setAssistantOpen}
         title={tx("Jeevi AI Assistant", selectedLanguage)}
-        description={tx("Friendly multilingual guidance for nutrition, parenting, vaccination, child health education, and next steps.", selectedLanguage)}
+        description={tx("Real AI guidance for nutrition, parenting, vaccination, child health education, and next steps.", selectedLanguage)}
       >
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm leading-7 text-foreground">
-            {tx("Hello, I am Jeevi. I can explain vaccine timing, child feeding, common symptoms, growth milestones, and safe next steps in simple language.", selectedLanguage)}
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Card className="border-border/70 bg-background/72 shadow-none">
-              <CardContent className="space-y-2 p-4">
-                <div className="flex items-center gap-2 text-foreground">
-                  <Bot className="h-5 w-5 text-primary" />
-                  <p className="font-semibold">{tx("Sample question", selectedLanguage)}</p>
-                </div>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {tx("My child missed one vaccine. What should I do next?", selectedLanguage)}
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/70 bg-background/72 shadow-none">
-              <CardContent className="space-y-2 p-4">
-                <div className="flex items-center gap-2 text-foreground">
-                  <HeartPulse className="h-5 w-5 text-emerald-400" />
-                  <p className="font-semibold">{tx("Sample answer", selectedLanguage)}</p>
-                </div>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {tx("Do not worry. Open Vaccination Timeline, check the missed dose, and contact the nearest care center shown in Hospitals.", selectedLanguage)}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="rounded-2xl border border-border/70 bg-background/72 p-4">
-            <div className="flex items-center gap-2 text-foreground">
-              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-              <p className="font-semibold">{tx("Multilingual-ready architecture", selectedLanguage)}</p>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {tx("Navigation, labels, buttons, and help content are now structured to scale across English, Tamil, and Hindi.", selectedLanguage)}
-            </p>
-          </div>
-        </div>
+        <JeeviChat />
       </Modal>
-    </main>
+    </div>
   );
 }

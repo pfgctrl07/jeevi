@@ -5,10 +5,10 @@ import { t } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const toneClasses: Record<SummaryItem["tone"], string> = {
-  primary: "bg-blue-500/15 text-blue-100 ring-blue-500/20",
-  success: "bg-emerald-500/15 text-emerald-100 ring-emerald-500/20",
-  warning: "bg-amber-500/15 text-amber-100 ring-amber-500/20",
-  danger: "bg-red-500/15 text-red-100 ring-red-500/20",
+  primary: "bg-primary/15 text-primary ring-primary/25",
+  success: "bg-emerald-500/15 text-emerald-700 ring-emerald-500/25 dark:text-emerald-200",
+  warning: "bg-amber-500/15 text-amber-700 ring-amber-500/25 dark:text-amber-200",
+  danger: "bg-red-500/15 text-red-700 ring-red-500/25 dark:text-red-200",
 };
 
 export function StatCard({
@@ -26,7 +26,7 @@ export function StatCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08 }}
     >
-      <Card className="h-full overflow-hidden border-border/70 bg-card/88">
+      <Card className="h-full overflow-hidden border-border/70 bg-card">
         <CardContent className="flex h-full flex-col gap-4 p-5">
           <div
             className={cn(

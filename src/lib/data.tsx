@@ -46,6 +46,14 @@ export type SectionKey =
   | "hospital"
   | "settings";
 
+// Each role's home/landing section — where the quick-actions list and
+// activity feed belong. Every other section is a focused task view.
+export const defaultSectionForRole: Record<AppRole, SectionKey> = {
+  parent: "dashboard",
+  doctor: "doctor",
+  hospital: "hospital",
+};
+
 export type LabelSet = {
   en: string;
   ta: string;
@@ -60,6 +68,7 @@ export type PriorityCard = {
   icon: LucideIcon;
   accent: string;
   status: LabelSet;
+  roles: AppRole[];
 };
 
 export type SummaryItem = {
@@ -69,24 +78,11 @@ export type SummaryItem = {
   tone: "primary" | "success" | "warning" | "danger";
 };
 
-export type ActivityItem = {
-  id: string;
-  title: LabelSet;
-  detail: LabelSet;
-  time: LabelSet;
-};
-
 export type SidebarItem = {
   id: SectionKey;
   label: LabelSet;
   icon: LucideIcon;
   roles: AppRole[];
-};
-
-export type QuickMetric = {
-  label: LabelSet;
-  value: LabelSet;
-  tone: "primary" | "success" | "warning";
 };
 
 export type HighlightItem = {
@@ -198,8 +194,9 @@ export const priorityCards: PriorityCard[] = [
       hi: "मदद खोलें",
     },
     icon: Cross,
-    accent: "from-red-500/20 to-rose-400/10",
+    accent: "from-red-500 to-rose-600",
     status: { en: "Always ready", ta: "எப்போதும் தயாராக", hi: "हमेशा तैयार" },
+    roles: ["parent", "doctor", "hospital"],
   },
   {
     id: "appointments",
@@ -209,14 +206,15 @@ export const priorityCards: PriorityCard[] = [
       hi: "अगली मुलाकात",
     },
     description: {
-      en: "Dr. Raman will review growth and feeding",
-      ta: "டாக்டர் ராமன் வளர்ச்சியும் உணவும் பார்க்கிறார்",
-      hi: "डॉ. रमन वृद्धि और आहार की समीक्षा करेंगे",
+      en: "Review and manage upcoming visits",
+      ta: "வரவிருக்கும் சந்திப்புகளை நிர்வகிக்கவும்",
+      hi: "आगामी मुलाकातें देखें और प्रबंधित करें",
     },
     buttonLabel: { en: "Open Visit", ta: "நேரம் திறக்க", hi: "मुलाकात खोलें" },
     icon: CalendarDays,
-    accent: "from-emerald-500/20 to-teal-400/10",
-    status: { en: "20 July, 10:30 AM", ta: "20 ஜூலை, 10:30", hi: "20 जुलाई, 10:30" },
+    accent: "from-teal-500 to-teal-700",
+    status: { en: "", ta: "", hi: "" },
+    roles: ["parent", "doctor", "hospital"],
   },
   {
     id: "learning",
@@ -232,8 +230,9 @@ export const priorityCards: PriorityCard[] = [
     },
     buttonLabel: { en: "Open Learning", ta: "கற்றல் திறக்க", hi: "लर्निंग खोलें" },
     icon: BookOpenText,
-    accent: "from-violet-500/20 to-indigo-400/10",
+    accent: "from-orange-500 to-amber-600",
     status: { en: "Prototype ready", ta: "மாதிரி தயார்", hi: "प्रोटोटाइप तैयार" },
+    roles: ["parent"],
   },
   {
     id: "hospitals",
@@ -249,137 +248,22 @@ export const priorityCards: PriorityCard[] = [
     },
     buttonLabel: { en: "Explore Care", ta: "சிகிச்சை பார்க்க", hi: "केयर देखें" },
     icon: MapPinned,
-    accent: "from-sky-500/20 to-cyan-400/10",
+    accent: "from-sky-500 to-cyan-600",
     status: { en: "3 centers nearby", ta: "3 மையங்கள்", hi: "3 केंद्र पास में" },
-  },
-  {
-    id: "records",
-    title: {
-      en: "Patient Services",
-      ta: "நோயாளர் சேவைகள்",
-      hi: "रोगी सेवाएँ",
-    },
-    description: {
-      en: "Medical record, prescriptions, and care notes in one place",
-      ta: "பதிவுகள், மருந்துகள், குறிப்புகள் ஒரே இடத்தில்",
-      hi: "रिकॉर्ड, दवाइयाँ और नोट्स एक ही जगह",
-    },
-    buttonLabel: { en: "Open Record", ta: "பதிவு திறக்க", hi: "रिकॉर्ड खोलें" },
-    icon: ClipboardPlus,
-    accent: "from-blue-500/20 to-indigo-400/10",
-    status: { en: "Everything together", ta: "அனைத்தும் ஒன்றாக", hi: "सब एक जगह" },
+    roles: ["parent"],
   },
 ];
 
-export const summaryItems: SummaryItem[] = [
-  {
-    title: { en: "Next Vaccine", ta: "அடுத்த தடுப்பூசி", hi: "अगला टीका" },
-    value: { en: "MMR", ta: "MMR", hi: "MMR" },
-    supporting: {
-      en: "15 July 2026",
-      ta: "15 ஜூலை 2026",
-      hi: "15 जुलाई 2026",
-    },
-    tone: "primary",
-  },
-  {
-    title: { en: "Next Visit", ta: "அடுத்த சந்திப்பு", hi: "अगली मुलाकात" },
-    value: { en: "Dr. Raman", ta: "டாக்டர் ராமன்", hi: "डॉ. रमन" },
-    supporting: {
-      en: "20 July 2026 · 10:30 AM",
-      ta: "20 ஜூலை 2026 · 10:30",
-      hi: "20 जुलाई 2026 · 10:30",
-    },
-    tone: "warning",
-  },
-  {
-    title: { en: "Health Status", ta: "நல நிலை", hi: "स्वास्थ्य स्थिति" },
-    value: { en: "Healthy", ta: "நலமாக", hi: "स्वस्थ" },
-    supporting: {
-      en: "Feeding and growth look steady",
-      ta: "உணவும் வளர்ச்சியும் சீராக உள்ளது",
-      hi: "खानपान और विकास स्थिर हैं",
-    },
-    tone: "success",
-  },
-];
-
-export const recentActivities: ActivityItem[] = [
-  {
-    id: "1",
-    title: { en: "Vaccination Completed", ta: "தடுப்பூசி முடிந்தது", hi: "टीकाकरण पूरा हुआ" },
-    detail: {
-      en: "Polio booster marked complete by nurse Meena.",
-      ta: "போலியோ பூஸ்டர் nurse Meena மூலம் முடிந்தது.",
-      hi: "पोलियो बूस्टर नर्स मीना ने पूरा दर्ज किया।",
-    },
-    time: { en: "Today", ta: "இன்று", hi: "आज" },
-  },
-  {
-    id: "2",
-    title: { en: "Doctor Visit", ta: "மருத்துவர் சந்திப்பு", hi: "डॉक्टर विज़िट" },
-    detail: {
-      en: "Routine growth check completed with Dr. Raman.",
-      ta: "டாக்டர் ராமனுடன் வளர்ச்சி பரிசோதனை முடிந்தது.",
-      hi: "डॉ. रमन के साथ नियमित विकास जांच पूरी हुई।",
-    },
-    time: { en: "Yesterday", ta: "நேற்று", hi: "कल" },
-  },
-  {
-    id: "3",
-    title: { en: "Nutrition Report Generated", ta: "ஊட்டச்சத்து அறிக்கை", hi: "पोषण रिपोर्ट" },
-    detail: {
-      en: "Weekly food plan shared for mother and child.",
-      ta: "அம்மாவுக்கும் குழந்தைக்கும் வார உணவுத் திட்டம் அனுப்பப்பட்டது.",
-      hi: "मां और बच्चे के लिए साप्ताहिक भोजन योजना साझा की गई।",
-    },
-    time: { en: "2 days ago", ta: "2 நாள் முன்", hi: "2 दिन पहले" },
-  },
-  {
-    id: "4",
-    title: { en: "Prescription Downloaded", ta: "மருந்து பதிவிறக்கம்", hi: "प्रिस्क्रिप्शन डाउनलोड" },
-    detail: {
-      en: "Vitamin D prescription saved for offline access.",
-      ta: "Vitamin D மருந்து ஆஃப்லைனுக்கு சேமிக்கப்பட்டது.",
-      hi: "विटामिन D पर्ची ऑफलाइन उपयोग के लिए सहेजी गई।",
-    },
-    time: { en: "3 days ago", ta: "3 நாள் முன்", hi: "3 दिन पहले" },
-  },
-];
-
-export const quickMetrics: QuickMetric[] = [
-  {
-    label: { en: "Next Vaccine", ta: "அடுத்த தடுப்பூசி", hi: "अगला टीका" },
-    value: { en: "MMR · 15 July 2026", ta: "MMR · 15 ஜூலை 2026", hi: "MMR · 15 जुलाई 2026" },
-    tone: "primary",
-  },
-  {
-    label: { en: "Next Visit", ta: "அடுத்த சந்திப்பு", hi: "अगली मुलाकात" },
-    value: { en: "Dr. Raman · 20 July", ta: "டாக்டர் ராமன் · 20 ஜூலை", hi: "डॉ. रमन · 20 जुलाई" },
-    tone: "warning",
-  },
-  {
-    label: { en: "Emergency", ta: "அவசரம்", hi: "आपातकाल" },
-    value: { en: "108 ready", ta: "108 தயார்", hi: "108 तैयार" },
-    tone: "warning",
-  },
-];
 
 export const sidebarItems: SidebarItem[] = [
   { id: "dashboard", label: { en: "My Child Today", ta: "இன்று என் குழந்தை", hi: "आज मेरा बच्चा" }, icon: House, roles: ["parent"] },
   { id: "vaccination", label: { en: "Vaccination", ta: "தடுப்பூசி", hi: "टीकाकरण" }, icon: ShieldCheck, roles: ["parent", "doctor", "hospital"] },
-  { id: "records", label: { en: "Medical Records", ta: "மருத்துவ பதிவுகள்", hi: "मेडिकल रिकॉर्ड" }, icon: ClipboardPlus, roles: ["parent", "doctor", "hospital"] },
   { id: "appointments", label: { en: "Appointments", ta: "நேரங்கள்", hi: "अपॉइंटमेंट" }, icon: CalendarDays, roles: ["parent", "doctor", "hospital"] },
   { id: "nutrition", label: { en: "Nutrition AI", ta: "ஊட்டச்சத்து AI", hi: "पोषण AI" }, icon: Sparkles, roles: ["parent"] },
-  { id: "growth", label: { en: "Growth Tracker", ta: "வளர்ச்சி கண்காணிப்பு", hi: "ग्रोथ ट्रैकर" }, icon: Activity, roles: ["parent", "doctor"] },
   { id: "prescriptions", label: { en: "Prescriptions", ta: "மருந்துகள்", hi: "प्रिस्क्रिप्शन" }, icon: Pill, roles: ["parent", "doctor"] },
   { id: "learning", label: { en: "Learning Hub", ta: "கற்றல் மையம்", hi: "लर्निंग हब" }, icon: BookOpenText, roles: ["parent"] },
-  { id: "telemedicine", label: { en: "Telemedicine", ta: "தொலை மருத்துவம்", hi: "टेलीमेडिसिन" }, icon: Video, roles: ["parent", "doctor"] },
-  { id: "community", label: { en: "Community", ta: "சமூக ஆதரம்", hi: "समुदाय" }, icon: MessageCircleHeart, roles: ["parent"] },
-  { id: "marketplace", label: { en: "Marketplace", ta: "சந்தை", hi: "मार्केटप्लेस" }, icon: PackageOpen, roles: ["parent"] },
   { id: "hospitals", label: { en: "Nearby Hospitals", ta: "அருகிலுள்ள மருத்துவமனைகள்", hi: "पास के अस्पताल" }, icon: MapPinned, roles: ["parent"] },
   { id: "emergency", label: { en: "Emergency", ta: "அவசரம்", hi: "आपातकाल" }, icon: Cross, roles: ["parent", "doctor", "hospital"] },
-  { id: "abha", label: { en: "ABHA Ready", ta: "ABHA தயார்", hi: "ABHA तैयार" }, icon: ScanSearch, roles: ["parent"] },
   { id: "doctor", label: { en: "Doctor Portal", ta: "மருத்துவர் பகுதி", hi: "डॉक्टर पोर्टल" }, icon: Stethoscope, roles: ["doctor"] },
   { id: "hospital", label: { en: "Hospital Portal", ta: "மருத்துவமனை பகுதி", hi: "अस्पताल पोर्टल" }, icon: Hospital, roles: ["hospital"] },
   { id: "settings", label: { en: "Settings", ta: "அமைப்புகள்", hi: "सेटिंग्स" }, icon: Settings, roles: ["parent", "doctor", "hospital"] },
@@ -535,11 +419,7 @@ export const moduleSections: Record<SectionKey, ModuleSection> = {
       hi: "आने वाली और पिछली मुलाकातें, डॉक्टर और अस्पताल जानकारी सहित।",
     },
     icon: CalendarDays,
-    highlights: [
-      { title: { en: "Upcoming", ta: "வரவுள்ளது", hi: "आने वाला" }, detail: { en: "20 July · Dr. Raman", ta: "20 ஜூலை · டாக்டர் ராமன்", hi: "20 जुलाई · डॉ. रमन" }, icon: CalendarDays },
-      { title: { en: "Status", ta: "நிலை", hi: "स्थिति" }, detail: { en: "Confirmed", ta: "உறுதி", hi: "पुष्ट" }, icon: Activity },
-      { title: { en: "Hospital", ta: "மருத்துவமனை", hi: "अस्पताल" }, detail: { en: "Jeevitham Care Center", ta: "Jeevitham Care Center", hi: "जीविथम केयर सेंटर" }, icon: Hospital },
-    ],
+    highlights: [],
   },
   nutrition: {
     title: { en: "AI Nutrition Center", ta: "AI ஊட்டச்சத்து மையம்", hi: "AI पोषण केंद्र" },
@@ -580,7 +460,6 @@ export const moduleSections: Record<SectionKey, ModuleSection> = {
     highlights: [
       { title: { en: "Ambulance", ta: "அம்புலன்ஸ்", hi: "एंबुलेंस" }, detail: { en: "108", ta: "108", hi: "108" }, icon: Cross },
       { title: { en: "Women helpline", ta: "பெண்கள் உதவி", hi: "महिला हेल्पलाइन" }, detail: { en: "181", ta: "181", hi: "181" }, icon: BellRing },
-      { title: { en: "Hospital hotline", ta: "மருத்துவமனை ஹாட்லைன்", hi: "अस्पताल हेल्पलाइन" }, detail: { en: "1800-21-JEEVI", ta: "1800-21-JEEVI", hi: "1800-21-JEEVI" }, icon: Hospital },
     ],
   },
   learning: {
@@ -759,11 +638,10 @@ export const modalContentMap: Record<Exclude<SectionKey, "dashboard">, ModalCont
   },
   appointments: {
     title: { en: "Appointments", ta: "நேரங்கள்", hi: "अपॉइंटमेंट" },
-    description: { en: "Simple list of next and previous visits.", ta: "அடுத்ததும் முந்தையதும் எளிய பட்டியல்.", hi: "आने वाली और पिछली मुलाकातों की सूची।" },
+    description: { en: "Open the Appointments tab for the real upcoming visit and status.", ta: "உண்மையான அடுத்த சந்திப்பை Appointments தாவலில் காணவும்.", hi: "असली अगली मुलाकात Appointments टैब में देखें।" },
     tone: "warning",
     items: [
-      { label: { en: "Dr. Raman", ta: "டாக்டர் ராமன்", hi: "डॉ. रमन" }, value: { en: "20 July · 10:30 AM", ta: "20 ஜூலை · 10:30", hi: "20 जुलाई · 10:30" } },
-      { label: { en: "Teleconsultation", ta: "தொலை ஆலோசனை", hi: "टेलीकंसल्टेशन" }, value: { en: "25 July · 6:00 PM", ta: "25 ஜூலை · 6:00", hi: "25 जुलाई · 6:00" } },
+      { label: { en: "Next visit", ta: "அடுத்த சந்திப்பு", hi: "अगली मुलाकात" }, value: { en: "See the Appointments tab", ta: "Appointments தாவலைப் பாருங்கள்", hi: "Appointments टैब देखें" } },
     ],
     note: { en: "Booking remains frontend-only in this prototype.", ta: "இந்த முன்னோட்டத்தில் முன்பதிவு frontend-only.", hi: "इस प्रोटोटाइप में बुकिंग केवल फ्रंटएंड है।" },
   },
