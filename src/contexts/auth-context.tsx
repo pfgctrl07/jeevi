@@ -7,53 +7,95 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getStoredValue, removeStoredValue, setStoredValue } from "@/lib/storage";
+import { api, type AuthUser, clearAuthToken, getAuthToken, setAuthToken } from "@/lib/api";
+
+type AuthResult = { success: true } | { success: false; error: string };
 
 type AuthContextValue = {
+  user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<AuthResult>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: AuthUser["role"],
+  ) => Promise<AuthResult>;
   logout: () => void;
 };
 
-const STORAGE_KEY = "jeevitham-authenticated";
-const DEMO_EMAIL = "admin@jeevitham.in";
-const DEMO_PASSWORD = "123456";
-
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function errorMessage(err: unknown) {
+  return err instanceof Error ? err.message : "Something went wrong. Please try again.";
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedValue = getStoredValue(STORAGE_KEY);
-    setIsAuthenticated(storedValue === "true");
-  }, []);
-
-  const login = useCallback((email: string, password: string) => {
-    const emailMatches = email.trim().toLowerCase() === DEMO_EMAIL;
-    const passwordMatches = password === DEMO_PASSWORD;
-
-    if (!emailMatches || !passwordMatches) {
-      return false;
+    // A stored token only proves a session existed on this device — confirm
+    // with the server it's still valid before trusting it, since it may have
+    // expired or been signed with a secret the server no longer uses.
+    if (!getAuthToken()) {
+      setIsLoading(false);
+      return;
     }
 
-    setStoredValue(STORAGE_KEY, "true");
-    setIsAuthenticated(true);
-    return true;
+    api
+      .me()
+      .then(({ user: validUser }) => setUser(validUser))
+      .catch(() => clearAuthToken())
+      .finally(() => setIsLoading(false));
   }, []);
 
+  const login = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    try {
+      const { token, user: loggedInUser } = await api.login({ email, password });
+      setAuthToken(token);
+      setUser(loggedInUser);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: errorMessage(err) };
+    }
+  }, []);
+
+  const register = useCallback(
+    async (
+      name: string,
+      email: string,
+      password: string,
+      role: AuthUser["role"],
+    ): Promise<AuthResult> => {
+      try {
+        const { token, user: newUser } = await api.register({ name, email, password, role });
+        setAuthToken(token);
+        setUser(newUser);
+        return { success: true };
+      } catch (err) {
+        return { success: false, error: errorMessage(err) };
+      }
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
-    removeStoredValue(STORAGE_KEY);
-    setIsAuthenticated(false);
+    clearAuthToken();
+    setUser(null);
   }, []);
 
   const value = useMemo(
     () => ({
-      isAuthenticated,
+      user,
+      isAuthenticated: Boolean(user),
+      isLoading,
       login,
+      register,
       logout,
     }),
-    [isAuthenticated, login, logout],
+    [user, isLoading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

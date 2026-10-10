@@ -1,4 +1,5 @@
 import "dotenv/config";
+import crypto from "node:crypto";
 import express from "express";
 import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -10,7 +11,10 @@ import {
   deletePatient,
   getActivities,
   addActivity,
+  createUser,
+  getUserByEmail,
 } from "./db.js";
+import { hashPassword, verifyPassword, signToken, requireAuth } from "./auth.js";
 
 const app = express();
 // CORS_ORIGIN lets the deployed API be locked to the real frontend domain
@@ -62,19 +66,72 @@ function geminiErrorMessage(err) {
   return "AI request failed";
 }
 
+// --- Auth ---
+
+const VALID_ROLES = ["parent", "doctor", "hospital"];
+
+app.post("/api/auth/register", async (req, res) => {
+  const { name, email, password, role } = req.body ?? {};
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "name, email and password are required" });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters" });
+  }
+  const normalizedRole = VALID_ROLES.includes(role) ? role : "parent";
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (getUserByEmail(normalizedEmail)) {
+    return res.status(409).json({ error: "An account with that email already exists" });
+  }
+
+  const passwordHash = await hashPassword(password);
+  const user = createUser({
+    id: crypto.randomUUID(),
+    name: name.trim(),
+    email: normalizedEmail,
+    passwordHash,
+    role: normalizedRole,
+  });
+
+  const token = signToken(user);
+  res.status(201).json({ token, user });
+});
+
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body ?? {};
+  if (!email || !password) {
+    return res.status(400).json({ error: "email and password are required" });
+  }
+
+  const userRow = getUserByEmail(email.trim().toLowerCase());
+  const passwordOk = userRow ? await verifyPassword(password, userRow.password_hash) : false;
+  if (!userRow || !passwordOk) {
+    return res.status(401).json({ error: "Invalid email or password" });
+  }
+
+  const user = { id: userRow.id, name: userRow.name, email: userRow.email, role: userRow.role };
+  const token = signToken(user);
+  res.json({ token, user });
+});
+
+app.get("/api/auth/me", requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
+
 // --- Patients (Hospital Dashboard + Vaccination Dashboard) ---
 
-app.get("/api/patients", async (_req, res) => {
+app.get("/api/patients", requireAuth, async (_req, res) => {
   res.json(await getPatients());
 });
 
-app.get("/api/patients/:id", async (req, res) => {
+app.get("/api/patients/:id", requireAuth, async (req, res) => {
   const patient = await getPatient(req.params.id);
   if (!patient) return res.status(404).json({ error: "Not found" });
   res.json(patient);
 });
 
-app.post("/api/patients", async (req, res) => {
+app.post("/api/patients", requireAuth, async (req, res) => {
   const patient = req.body;
   if (!patient?.id || !patient?.name) {
     return res.status(400).json({ error: "id and name are required" });
@@ -92,7 +149,7 @@ app.post("/api/patients", async (req, res) => {
   res.status(201).json(created);
 });
 
-app.put("/api/patients/:id", async (req, res) => {
+app.put("/api/patients/:id", requireAuth, async (req, res) => {
   const updated = await updatePatient(req.params.id, req.body);
   if (!updated) return res.status(404).json({ error: "Not found" });
   await addActivity({
@@ -103,7 +160,7 @@ app.put("/api/patients/:id", async (req, res) => {
   res.json(updated);
 });
 
-app.delete("/api/patients/:id", async (req, res) => {
+app.delete("/api/patients/:id", requireAuth, async (req, res) => {
   const existing = await getPatient(req.params.id);
   const removed = await deletePatient(req.params.id);
   if (!removed) return res.status(404).json({ error: "Not found" });
@@ -117,7 +174,7 @@ app.delete("/api/patients/:id", async (req, res) => {
 
 // --- Doctor actions: the write side of the Hospital → Doctor → Parent loop ---
 
-app.post("/api/patients/:id/vaccines/complete", async (req, res) => {
+app.post("/api/patients/:id/vaccines/complete", requireAuth, async (req, res) => {
   const { vaccine, doctor } = req.body;
   if (!vaccine) return res.status(400).json({ error: "vaccine is required" });
 
@@ -147,7 +204,7 @@ app.post("/api/patients/:id/vaccines/complete", async (req, res) => {
   res.json(updated);
 });
 
-app.post("/api/patients/:id/prescriptions", async (req, res) => {
+app.post("/api/patients/:id/prescriptions", requireAuth, async (req, res) => {
   const { medicine, dosage = "", notes = "", doctor = "" } = req.body;
   if (!medicine) return res.status(400).json({ error: "medicine is required" });
 
@@ -173,7 +230,7 @@ app.post("/api/patients/:id/prescriptions", async (req, res) => {
   res.status(201).json(updated);
 });
 
-app.post("/api/patients/:id/notes", async (req, res) => {
+app.post("/api/patients/:id/notes", requireAuth, async (req, res) => {
   const { text, doctor = "" } = req.body;
   if (!text) return res.status(400).json({ error: "text is required" });
 
@@ -199,7 +256,7 @@ app.post("/api/patients/:id/notes", async (req, res) => {
 
 // --- Jeevi AI chatbot ---
 
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", requireAuth, async (req, res) => {
   if (!requireAI(res)) return;
 
   const { message, history = [], language = "en", childId } = req.body;
@@ -258,7 +315,7 @@ app.post("/api/chat", async (req, res) => {
 
 // --- Nutrition / food-label analyzer ---
 
-app.post("/api/nutrition-analyze", async (req, res) => {
+app.post("/api/nutrition-analyze", requireAuth, async (req, res) => {
   if (!requireAI(res)) return;
 
   const { foodName, description = "", childId } = req.body;
@@ -314,7 +371,7 @@ app.post("/api/nutrition-analyze", async (req, res) => {
   }
 });
 
-app.get("/api/activities", async (_req, res) => {
+app.get("/api/activities", requireAuth, async (_req, res) => {
   const activities = await getActivities();
   res.json(activities.slice(0, 10));
 });

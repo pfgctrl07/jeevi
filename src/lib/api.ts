@@ -1,4 +1,26 @@
+import { getStoredValue, removeStoredValue, setStoredValue } from "@/lib/storage";
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const TOKEN_STORAGE_KEY = "jeevitham-token";
+
+export function getAuthToken() {
+  return getStoredValue(TOKEN_STORAGE_KEY);
+}
+
+export function setAuthToken(token: string) {
+  setStoredValue(TOKEN_STORAGE_KEY, token);
+}
+
+export function clearAuthToken() {
+  removeStoredValue(TOKEN_STORAGE_KEY);
+}
+
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "parent" | "doctor" | "hospital";
+};
 
 export type VaccineRecord = {
   vaccine: string;
@@ -48,8 +70,16 @@ export type ActivityEntry = {
 };
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getAuthToken();
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    // ngrok-skip-browser-warning: harmless outside ngrok, but required so
+    // ngrok's free-tier interstitial page doesn't intercept API calls when
+    // the API is temporarily tunneled through it.
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
   });
 
@@ -63,6 +93,17 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  register: (payload: { name: string; email: string; password: string; role: AuthUser["role"] }) =>
+    request<{ token: string; user: AuthUser }>("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  login: (payload: { email: string; password: string }) =>
+    request<{ token: string; user: AuthUser }>("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  me: () => request<{ user: AuthUser }>("/api/auth/me"),
   getPatients: () => request<Patient[]>("/api/patients"),
   getPatient: (id: string) => request<Patient>(`/api/patients/${id}`),
   createPatient: (patient: Patient) =>

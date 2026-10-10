@@ -14,6 +14,7 @@ import {
   type SectionKey,
 } from "@/lib/data";
 import { getStoredValue, setStoredValue } from "@/lib/storage";
+import { useAuth } from "@/contexts/auth-context";
 
 type AppStateContextValue = {
   activeSection: SectionKey;
@@ -51,6 +52,7 @@ function getInitialTheme(): "light" | "dark" {
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<SectionKey>("dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] =
@@ -58,6 +60,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [selectedRole, setSelectedRole] = useState<AppRole>("parent");
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
   const [isAssistantOpen, setAssistantOpen] = useState(false);
+
+  useEffect(() => {
+    // Land each account on its own portal by default. The role switcher
+    // further down still lets anyone preview the other two for demos.
+    if (user) {
+      setSelectedRole(user.role);
+    }
+  }, [user]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");

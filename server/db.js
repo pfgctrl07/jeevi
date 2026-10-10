@@ -1,13 +1,61 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import crypto from "node:crypto";
+import Database from "better-sqlite3";
+import bcrypt from "bcryptjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "data");
-const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
-const ACTIVITY_FILE = path.join(DATA_DIR, "activity.json");
+const DB_FILE = path.join(DATA_DIR, "jeevitham.sqlite");
 const MAX_ACTIVITY_ENTRIES = 50;
+
+if (!existsSync(DATA_DIR)) {
+  mkdirSync(DATA_DIR, { recursive: true });
+}
+
+const db = new Database(DB_FILE);
+db.pragma("journal_mode = WAL");
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS patients (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    gender TEXT,
+    blood_group TEXT,
+    dob TEXT,
+    next_appointment TEXT,
+    doctor TEXT,
+    last_visit TEXT,
+    medication TEXT,
+    sample INTEGER DEFAULT 0,
+    allergies TEXT NOT NULL DEFAULT '[]',
+    vaccination_history TEXT NOT NULL DEFAULT '[]',
+    prescriptions TEXT NOT NULL DEFAULT '[]',
+    visit_notes TEXT NOT NULL DEFAULT '[]'
+  );
+
+  CREATE TABLE IF NOT EXISTS activity (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    detail TEXT,
+    time TEXT NOT NULL
+  );
+`);
+
+// --- Seed data: only inserted the first time the DB file is created, so a
+// demo deploy has something to look at without ever overwriting real data
+// entered later. ---
 
 const seedPatients = [
   {
@@ -53,72 +101,173 @@ const seedPatients = [
   },
 ];
 
-async function ensureStore() {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true });
+function rowToPatient(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    gender: row.gender ?? "",
+    bloodGroup: row.blood_group ?? "",
+    dob: row.dob ?? "",
+    nextAppointment: row.next_appointment ?? "",
+    doctor: row.doctor ?? "",
+    lastVisit: row.last_visit ?? "",
+    medication: row.medication ?? "",
+    sample: Boolean(row.sample),
+    allergies: JSON.parse(row.allergies),
+    vaccinationHistory: JSON.parse(row.vaccination_history),
+    prescriptions: JSON.parse(row.prescriptions),
+    visitNotes: JSON.parse(row.visit_notes),
+  };
+}
+
+const insertPatientStmt = db.prepare(`
+  INSERT INTO patients (
+    id, name, gender, blood_group, dob, next_appointment, doctor, last_visit,
+    medication, sample, allergies, vaccination_history, prescriptions, visit_notes
+  ) VALUES (
+    @id, @name, @gender, @bloodGroup, @dob, @nextAppointment, @doctor, @lastVisit,
+    @medication, @sample, @allergies, @vaccinationHistory, @prescriptions, @visitNotes
+  )
+`);
+
+function seedIfEmpty() {
+  const { count } = db.prepare("SELECT COUNT(*) AS count FROM patients").get();
+  if (count > 0) return;
+
+  const insertMany = db.transaction((patients) => {
+    for (const patient of patients) {
+      insertPatientStmt.run({
+        id: patient.id,
+        name: patient.name,
+        gender: patient.gender ?? "",
+        bloodGroup: patient.bloodGroup ?? "",
+        dob: patient.dob ?? "",
+        nextAppointment: patient.nextAppointment ?? "",
+        doctor: patient.doctor ?? "",
+        lastVisit: patient.lastVisit ?? "",
+        medication: patient.medication ?? "",
+        sample: patient.sample ? 1 : 0,
+        allergies: JSON.stringify(patient.allergies ?? []),
+        vaccinationHistory: JSON.stringify(patient.vaccinationHistory ?? []),
+        prescriptions: JSON.stringify(patient.prescriptions ?? []),
+        visitNotes: JSON.stringify(patient.visitNotes ?? []),
+      });
+    }
+  });
+  insertMany(seedPatients);
+}
+
+seedIfEmpty();
+
+// The README advertises this login for demos — seed it on first boot so a
+// fresh deploy (no .sqlite file yet) has it ready, same as the sample patients.
+function seedDemoUserIfEmpty() {
+  const { count } = db.prepare("SELECT COUNT(*) AS count FROM users").get();
+  if (count > 0) return;
+
+  db.prepare(
+    `INSERT INTO users (id, name, email, password_hash, role, created_at)
+     VALUES (@id, @name, @email, @passwordHash, @role, @createdAt)`,
+  ).run({
+    id: crypto.randomUUID(),
+    name: "Admin Demo",
+    email: "admin@jeevitham.in",
+    passwordHash: bcrypt.hashSync("123456", 10),
+    role: "parent",
+    createdAt: new Date().toISOString(),
+  });
+}
+
+seedDemoUserIfEmpty();
+
+// --- Patients ---
+
+export function getPatients() {
+  const rows = db.prepare("SELECT * FROM patients").all();
+  return rows.map(rowToPatient);
+}
+
+export function getPatient(id) {
+  const row = db.prepare("SELECT * FROM patients WHERE id = ?").get(id);
+  return rowToPatient(row);
+}
+
+export function createPatient(patient) {
+  insertPatientStmt.run({
+    id: patient.id,
+    name: patient.name,
+    gender: patient.gender ?? "",
+    bloodGroup: patient.bloodGroup ?? "",
+    dob: patient.dob ?? "",
+    nextAppointment: patient.nextAppointment ?? "",
+    doctor: patient.doctor ?? "",
+    lastVisit: patient.lastVisit ?? "",
+    medication: patient.medication ?? "",
+    sample: patient.sample ? 1 : 0,
+    allergies: JSON.stringify(patient.allergies ?? []),
+    vaccinationHistory: JSON.stringify(patient.vaccinationHistory ?? []),
+    prescriptions: JSON.stringify(patient.prescriptions ?? []),
+    visitNotes: JSON.stringify(patient.visitNotes ?? []),
+  });
+  return getPatient(patient.id);
+}
+
+const patientColumnMap = {
+  name: "name",
+  gender: "gender",
+  bloodGroup: "blood_group",
+  dob: "dob",
+  nextAppointment: "next_appointment",
+  doctor: "doctor",
+  lastVisit: "last_visit",
+  medication: "medication",
+  allergies: "allergies",
+  vaccinationHistory: "vaccination_history",
+  prescriptions: "prescriptions",
+  visitNotes: "visit_notes",
+};
+const jsonPatientFields = new Set([
+  "allergies",
+  "vaccinationHistory",
+  "prescriptions",
+  "visitNotes",
+]);
+
+export function updatePatient(id, updates) {
+  const existing = getPatient(id);
+  if (!existing) return null;
+
+  const setClauses = [];
+  const params = { id };
+  for (const [key, value] of Object.entries(updates)) {
+    const column = patientColumnMap[key];
+    if (!column) continue;
+    setClauses.push(`${column} = @${key}`);
+    params[key] = jsonPatientFields.has(key) ? JSON.stringify(value) : value;
   }
-  if (!existsSync(PATIENTS_FILE)) {
-    await writeFile(PATIENTS_FILE, JSON.stringify(seedPatients, null, 2));
+
+  if (setClauses.length > 0) {
+    db.prepare(`UPDATE patients SET ${setClauses.join(", ")} WHERE id = @id`).run(params);
   }
-  if (!existsSync(ACTIVITY_FILE)) {
-    await writeFile(ACTIVITY_FILE, JSON.stringify([], null, 2));
-  }
+
+  return getPatient(id);
 }
 
-export async function getPatients() {
-  await ensureStore();
-  const raw = await readFile(PATIENTS_FILE, "utf-8");
-  return JSON.parse(raw);
-}
-
-export async function getPatient(id) {
-  const patients = await getPatients();
-  return patients.find((p) => p.id === id) ?? null;
-}
-
-export async function savePatients(patients) {
-  await ensureStore();
-  await writeFile(PATIENTS_FILE, JSON.stringify(patients, null, 2));
-}
-
-export async function createPatient(patient) {
-  const patients = await getPatients();
-  patients.push(patient);
-  await savePatients(patients);
-  return patient;
-}
-
-export async function updatePatient(id, updates) {
-  const patients = await getPatients();
-  const index = patients.findIndex((p) => p.id === id);
-  if (index === -1) return null;
-  patients[index] = { ...patients[index], ...updates };
-  await savePatients(patients);
-  return patients[index];
-}
-
-export async function deletePatient(id) {
-  const patients = await getPatients();
-  const next = patients.filter((p) => p.id !== id);
-  await savePatients(next);
-  return next.length !== patients.length;
+export function deletePatient(id) {
+  const result = db.prepare("DELETE FROM patients WHERE id = ?").run(id);
+  return result.changes > 0;
 }
 
 // --- Activity log: a real, append-only record of things that actually
 // happened in the app, shown in the "Recent Activities" timeline instead of
 // static placeholder text. ---
 
-export async function getActivities() {
-  await ensureStore();
-  const raw = await readFile(ACTIVITY_FILE, "utf-8");
-  const entries = JSON.parse(raw);
-  return entries.sort((a, b) => new Date(b.time) - new Date(a.time));
+export function getActivities() {
+  return db.prepare("SELECT * FROM activity ORDER BY time DESC").all();
 }
 
-export async function addActivity({ type, title, detail }) {
-  await ensureStore();
-  const raw = await readFile(ACTIVITY_FILE, "utf-8");
-  const entries = JSON.parse(raw);
+export function addActivity({ type, title, detail }) {
   const entry = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     type,
@@ -126,8 +275,43 @@ export async function addActivity({ type, title, detail }) {
     detail,
     time: new Date().toISOString(),
   };
-  entries.push(entry);
-  const trimmed = entries.slice(-MAX_ACTIVITY_ENTRIES);
-  await writeFile(ACTIVITY_FILE, JSON.stringify(trimmed, null, 2));
+  db.prepare(
+    "INSERT INTO activity (id, type, title, detail, time) VALUES (@id, @type, @title, @detail, @time)",
+  ).run(entry);
+
+  const { count } = db.prepare("SELECT COUNT(*) AS count FROM activity").get();
+  if (count > MAX_ACTIVITY_ENTRIES) {
+    db.prepare(
+      `DELETE FROM activity WHERE id IN (
+        SELECT id FROM activity ORDER BY time ASC LIMIT @excess
+      )`,
+    ).run({ excess: count - MAX_ACTIVITY_ENTRIES });
+  }
+
   return entry;
+}
+
+// --- Users ---
+
+export function createUser({ id, name, email, passwordHash, role }) {
+  db.prepare(
+    `INSERT INTO users (id, name, email, password_hash, role, created_at)
+     VALUES (@id, @name, @email, @passwordHash, @role, @createdAt)`,
+  ).run({ id, name, email, passwordHash, role, createdAt: new Date().toISOString() });
+  return getUserById(id);
+}
+
+function rowToUser(row) {
+  if (!row) return null;
+  return { id: row.id, name: row.name, email: row.email, role: row.role };
+}
+
+export function getUserByEmail(email) {
+  const row = db.prepare("SELECT * FROM users WHERE email = ?").get(email.toLowerCase());
+  return row ?? null;
+}
+
+export function getUserById(id) {
+  const row = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+  return rowToUser(row);
 }
